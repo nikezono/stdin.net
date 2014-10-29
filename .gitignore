@@ -1,0 +1,11 @@
+*.swp
+.DS_Store
+node_modules
+.nodectl.run
+unific.log
+*.log
+dump.rdb
+
+newrelic.js
+build/
+coverage/

@@ -1,0 +1,13 @@
+{
+  "name": "stdin.net",
+    "description":"Standard Input on Web",
+    "website": "https://github.com/nikezono/stdin.net",
+    "repository": "https://github.com/nikezono/stdin.net",
+    "success_url": "/",
+    "addons": ["mongohq:sandbox"],
+    "env": {
+      "NODE_ENV": "production",
+      "TZ": "Asia/Tokyo",
+      "HEROKU_URL": "https://(YOUR-APP-NAME).herokuapp.com"
+    }
+}
