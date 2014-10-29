@@ -30,7 +30,7 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
     upsert:true
   ,(err,page)->
     return callback err,null if err
-    debug "New Page. #{page.article.title}"
+    debug "New Page or update. #{page.article.title}"
     return callback null,page
 
 exports.Page = Mongo.model 'pages', PageSchema
