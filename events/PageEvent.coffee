@@ -29,7 +29,7 @@ module.exports.PageEvent = (app) ->
     return res.send 400 if not id
 
     request.get
-      url:"http://127.0.0.1:4001/neighbor" #@todo 修正
+      url:app.get("jubatus_url")+"/neighbor" #@todo 修正
       body:
         id:id
       json:true
