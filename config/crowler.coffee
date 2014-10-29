@@ -5,7 +5,7 @@ Crowler.coffee
 
 ###
 
-debug = require('debug')('config/crowler')
+debug = require('debug')('stdin/config/crowler')
 _    = require 'underscore'
 Watcher = require 'rss-watcher'
 
@@ -18,7 +18,7 @@ exports = module.exports = (app)->
   addToSet:(feed)->
     Feed.findOne url:feed.url,(err,doc)->
       return app.emit 'error', err if err
-      return debug "already added. #{url}" if doc
+      return debug "already added. #{feed.url}" if doc
       @createWatcher(feed)
 
   createWatcher : (feed)->
@@ -26,7 +26,7 @@ exports = module.exports = (app)->
     watcher.set
       interval:60*3 # @todo frequency moduleがオカシイ
     watcher.on 'new article',(article)=>
-      debug "new article on #{url}"
+      debug "new article on #{feed.url}"
       Page.upsertOneWithFeed article,feed,(err,page)->
         return app.emit 'error', err if err
         app.emit 'new article',
@@ -39,7 +39,7 @@ exports = module.exports = (app)->
       for article in articles
         Page.upsertOneWithFeed article,feed,(err,page)->
           return app.emit 'error', err if err
-          app.get('emitter').emit 'new feed',
+          app.emit 'new feed',
             feed:feed
 
   initialize : ->

@@ -17,7 +17,7 @@ module.exports = (app) ->
 
   # FeedEvent Controller
   app.get  '/api/feed/find',       (req,res,next)-> FeedEvent.findFeed req,res,next
-  app.post '/api/feed/subscribe',  (req,res,next)-> FeedEvent.subscribeFeed req,res,next
+  app.post '/api/feed/subscribe',  (req,res,next)-> FeedEvent.subscribe req,res,next
 
   # PageEvent Controller
   app.get  '/api/page/latest',     (req,res,next)-> PageEvent.getLatestPages req,res,next

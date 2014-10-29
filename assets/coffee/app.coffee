@@ -29,20 +29,17 @@ $ ->
 
   # Model & View Initialize
   articles       = new Articles()
-  candidates     = new Candidates()
 
   articlesView   = new ArticlesView
     collection:articles
-  candidatesView = new CandidatesView
-    model: null
-    collection:candidates
 
   # Helper Method
   refresh = (callback)->
     httpApi.getLatestArticles (err,data)->
       if err
         console.error err
-        return notify.danger "Initialize Error.Please Reload."
+        notify.danger "Initialize Error.Please Reload."
+        return callback() if callback
 
       newArticles = []
       for article in data
@@ -59,7 +56,6 @@ $ ->
 
   App.addInitializer (options)->
     App.pages.show articlesView
-    App.modals.show candidatesView # @note modalなので常にshowしておいてjsで制御する
 
   # 初回記事読み込み
   $(document).ready ->
@@ -72,22 +68,21 @@ $ ->
 
   ## Socket.io EventHandlers ##
   socket.on "new feed", (data)->
+    console.log data
+    notify.info "New Feed:#{data.feed.url}"
     refresh()
   socket.on "new article", (data)->
-    refresh()
+    console.log data
+    notify.info "New Article:#{data.page.article.title}"
+    refresh() # @todo 非同期追加
 
-  resetCandidates = (data)->
-    newCandidates = []
-    for candidate in data
-      newCandidates.push new Candidate candidate
-    candidates.reset newCandidates
-    $('.modal').modal()
-
-  ## Navigation Event @note backboneに落としこむ
+## Navigation Event @note backboneに落としこむ
   $('button#Find').click ->
     query = $('#FindQuery').val()
     httpApi.findFeed query,(err,data)->
       return notify.danger err if err
-      return notify.danger "candidate not found" if _.isEmpty data
-      resetCandidates(data)
+      for title in data.added
+        notify.success "Added: #{title}"
+      for title in data.alreadyAdded
+        notify.info "Already Added:#{title}"
 

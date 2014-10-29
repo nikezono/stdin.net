@@ -15,20 +15,6 @@
       }).error(function(err) {
         return callback(err, null);
       });
-    },
-    postSubscribeFeed: function(data, callback) {
-      return $.ajax("/api/feed/subscribe", {
-        type: "POST",
-        data: {
-          feed: JSON.stringify(data.feed)
-        },
-        success: function(data) {
-          return callback(null, data);
-        },
-        error: function(err) {
-          return callback(err, null);
-        }
-      });
     }
   };
 

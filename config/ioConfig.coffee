@@ -15,6 +15,16 @@ module.exports = (app, server) ->
   # setup socket.io
   io = (require 'socket.io').listen server
 
+  # 記事配信
+  app.on "new article",(data)->
+    debug data
+    io.sockets.emit 'new article',data
+
+  # フィード追加通知
+  app.on "new feed",(data)->
+    debug data
+    io.sockets.emit 'new feed',data
+
   # Routing
   io.sockets.on "connection", (socket) ->
 

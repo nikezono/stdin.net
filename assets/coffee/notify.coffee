@@ -28,11 +28,12 @@ window.notify =
 html5notification = (text)->
 
   show = (text)->
-    notification = new Notification "Unific",
+    notification = new Notification "stdin.net",
       body:text
       tag:"test"
-      iconUrl:"/images/unific-logo_narrow.png"
-      icon:"/images/unific-logo_narrow.png"
+    setTimeout ->
+      notification.close()
+    ,1000*5 # 5秒
 
   if window.Notification.permission is "granted"
     show(text)

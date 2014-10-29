@@ -38,12 +38,13 @@
     var show;
     show = function(text) {
       var notification;
-      return notification = new Notification("Unific", {
+      notification = new Notification("stdin.net", {
         body: text,
-        tag: "test",
-        iconUrl: "/images/unific-logo_narrow.png",
-        icon: "/images/unific-logo_narrow.png"
+        tag: "test"
       });
+      return setTimeout(function() {
+        return notification.close();
+      }, 1000 * 5);
     };
     if (window.Notification.permission === "granted") {
       return show(text);

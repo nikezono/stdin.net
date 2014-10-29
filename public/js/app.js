@@ -8,7 +8,7 @@
   $(function() {
 
     /* Configration & Initialize */
-    var App, articles, articlesView, candidates, candidatesView, httpApi, ioApi, path, refresh, resetCandidates, socket;
+    var App, articles, articlesView, httpApi, ioApi, path, refresh, socket;
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g
     };
@@ -28,20 +28,18 @@
       return alert.danger("Error");
     });
     articles = new Articles();
-    candidates = new Candidates();
     articlesView = new ArticlesView({
       collection: articles
-    });
-    candidatesView = new CandidatesView({
-      model: null,
-      collection: candidates
     });
     refresh = function(callback) {
       return httpApi.getLatestArticles(function(err, data) {
         var article, newArticles, _i, _len;
         if (err) {
           console.error(err);
-          return notify.danger("Initialize Error.Please Reload.");
+          notify.danger("Initialize Error.Please Reload.");
+          if (callback) {
+            return callback();
+          }
         }
         newArticles = [];
         for (_i = 0, _len = data.length; _i < _len; _i++) {
@@ -61,8 +59,7 @@
       pages: '#Pages'
     });
     App.addInitializer(function(options) {
-      App.pages.show(articlesView);
-      return App.modals.show(candidatesView);
+      return App.pages.show(articlesView);
     });
     $(document).ready(function() {
       return refresh(function() {
@@ -73,32 +70,35 @@
       return refresh();
     });
     socket.on("new feed", function(data) {
+      console.log(data);
+      notify.info("New Feed:" + data.feed.url);
       return refresh();
     });
     socket.on("new article", function(data) {
+      console.log(data);
+      notify.info("New Article:" + data.page.article.title);
       return refresh();
     });
-    resetCandidates = function(data) {
-      var candidate, newCandidates, _i, _len;
-      newCandidates = [];
-      for (_i = 0, _len = data.length; _i < _len; _i++) {
-        candidate = data[_i];
-        newCandidates.push(new Candidate(candidate));
-      }
-      candidates.reset(newCandidates);
-      return $('.modal').modal();
-    };
     return $('button#Find').click(function() {
       var query;
       query = $('#FindQuery').val();
       return httpApi.findFeed(query, function(err, data) {
+        var title, _i, _j, _len, _len1, _ref, _ref1, _results;
         if (err) {
           return notify.danger(err);
         }
-        if (_.isEmpty(data)) {
-          return notify.danger("candidate not found");
+        _ref = data.added;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          title = _ref[_i];
+          notify.success("Added: " + title);
         }
-        return resetCandidates(data);
+        _ref1 = data.alreadyAdded;
+        _results = [];
+        for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+          title = _ref1[_j];
+          _results.push(notify.info("Already Added:" + title));
+        }
+        return _results;
       });
     });
   });

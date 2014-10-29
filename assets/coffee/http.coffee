@@ -17,15 +17,3 @@ window.httpApiWrapper =
     .error (err)->
       callback err,null
 
-  postSubscribeFeed:(data,callback)->
-    $.ajax "/api/feed/subscribe",
-      type:"POST"
-      data:
-        feed:JSON.stringify data.feed
-      success:(data)->
-        callback null,data
-      error: (err)->
-        callback err,null
-
-
-

@@ -26,7 +26,8 @@ console.log "using newrelic:#{newrelicEnable}"
 if newrelicEnable
   require 'newrelic'
   # @todo 以下
-  # app.on "error",(err)->
+  app.on "error",(err)->
+    debug err
   #   newrelic.postErrorEvent 的な何か
 
 ### start socket.io and http server ###

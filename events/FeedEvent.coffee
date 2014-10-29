@@ -6,6 +6,7 @@
 
 debug  = require('debug')('stdin/events/feed')
 _      = require 'underscore'
+async  = require 'async'
 finder = require 'find-rss'
 finder.setOptions
   favicon:true
@@ -15,6 +16,8 @@ module.exports.FeedEvent = (app) ->
 
   Feed        = app.get('models').Feed
 
+  # GET /api/feed/find
+  # @param url
   findFeed: (req,res,next)->
     url = req.query.url
 
@@ -32,10 +35,38 @@ module.exports.FeedEvent = (app) ->
         if err
           app.emit 'error',err if err
           return res.send 500
-        return res.json candidates
 
+        # 選択させずに全て登録する
+        urls = []
+        alreadyUrls = []
+        async.forEach candidates, (candidate,cb)->
+          # 既にある場合は弾く
+          Feed.findOne url:candidate.url,(err,doc)->
+            return cb() app.emit 'error',err if err
+            if doc
+              alreadyUrls.push doc.feed.title
+              return cb()
+
+            # Feed 作成
+            Feed.create
+              url:candidate.url
+              feed:candidate
+            ,(err,doc)->
+              if err
+                app.emit 'error',err if err
+                return cb()
+              app.get('crowler').addToSet doc
+              urls.push doc.feed.title
+              return cb()
+        ,->
+          res.send
+            added:urls
+            alreadyAdded:alreadyUrls
+
+  # POST /api/feed/subscribe
+  # @param feed
   subscribe: (req,res,next)->
-    feed = req.query.feed
+    feed = JSON.parse req.body.feed
 
     return res.send 400 if not feed or _.isEmpty feed
 
@@ -56,5 +87,6 @@ module.exports.FeedEvent = (app) ->
           app.emit 'error',err if err
           return res.send 500
         if doc
+          app.get('crowler').addToSet doc
           res.send 200
 

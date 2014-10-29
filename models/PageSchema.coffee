@@ -13,14 +13,14 @@ Mongo = require 'mongoose'
 async = require 'async'
 _     = require 'underscore'
 
-debug = require('debug')('models/page')
+debug = require('debug')('stdin/models/page')
 
 PageSchema = new Mongo.Schema
   link:        { type: String, index:{ unique:true } }
   feed:        { type: Mongo.Schema.Types.ObjectId, ref: 'feeds' }
   article:     { type: Mongo.Schema.Types.Mixed }
 
-PageSchema.static.upsertOneWithFeed = (article,feed,callback)->
+PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
   @findOneAndUpdate
     link: article.link
   ,
@@ -30,6 +30,7 @@ PageSchema.static.upsertOneWithFeed = (article,feed,callback)->
     upsert:true
   ,(err,page)->
     return callback err,null if err
+    debug "New Page. #{page.article.title}"
     return callback null,page
 
 exports.Page = Mongo.model 'pages', PageSchema
