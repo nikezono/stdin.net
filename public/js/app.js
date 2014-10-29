@@ -77,7 +77,7 @@
     socket.on("new article", function(data) {
       console.log(data);
       notify.info("New Article:" + data.page.article.title);
-      return refresh();
+      return Articles.unshift(new Article(data.page));
     });
     return $('button#Find').click(function() {
       var query;

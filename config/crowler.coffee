@@ -26,12 +26,17 @@ exports = module.exports = (app)->
     watcher.set
       interval:60*3 # @todo frequency moduleがオカシイ
     watcher.on 'new article',(article)=>
-      debug "new article on #{feed.url}"
-      Page.upsertOneWithFeed article,feed,(err,page)->
-        return app.emit 'error', err if err
-        app.emit 'new article',
-          page:page
-          feed:feed
+      # あれば追加しない
+      Page.findOne link:article.link,->
+        return debug "Already Registerd Link Is Published.#{article.link}"
+        debug "New Article. #{article.link}"
+        Page.upsertOneWithFeed article,feed,(err,page)->
+          return app.emit 'error', err if err
+          # 擬似Populate
+          pageObject = page.toObject()
+          page.feed = feed
+          app.emit 'new article',
+            page:page
 
     watcher.run (err,articles)=>
       return app.emit 'error', err if err

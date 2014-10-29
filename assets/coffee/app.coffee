@@ -74,7 +74,7 @@ $ ->
   socket.on "new article", (data)->
     console.log data
     notify.info "New Article:#{data.page.article.title}"
-    refresh() # @todo 非同期追加
+    Articles.unshift new Article(data.page)
 
 ## Navigation Event @note backboneに落としこむ
   $('button#Find').click ->
