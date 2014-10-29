@@ -2,4 +2,16 @@ extends layout
 
 block content
 
-  #Content
+  #Modals
+
+  #Navigation.col-md-12
+    .input-group
+      input#FindQuery.form-control(type="text",
+        placehoder="Search URL or Input Feed URL"
+      )
+      span.input-group-btn
+        button.btn.btn-primary#Find
+          span.glyphicon.glyphicon-search
+          |  Find
+
+  #Pages

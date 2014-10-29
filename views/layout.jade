@@ -22,6 +22,14 @@ body
 
         block content
 
+  #Template
+    script#articleTemplate(type="text/template")
+      include template/panel
+    script#candidatesRootTemplate(type="text/template")
+      include template/candidatesRoot
+    script#candidateTemplate(type="text/template")
+      include template/candidate
+
   #Include
 
     //- javascript
@@ -42,7 +50,7 @@ body
     script(src="/js/io.js"     type="application/javascript")
     script(src="/js/model.js"  type="application/javascript")
     script(src="/js/view.js"   type="application/javascript")
-    script(src="/js/stdin.js" type="application/javascript")
+    script(src="/js/app.js" type="application/javascript")
 
 
 

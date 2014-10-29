@@ -22,7 +22,7 @@ module.exports.FeedEvent = (app) ->
 
     # Feedが既にあればドキュメントを返す
     Feed.findOne
-      url:url,
+      url:url
     ,(err,feed)->
       app.emit 'error',err if err
       return res.json feed if feed
@@ -32,7 +32,6 @@ module.exports.FeedEvent = (app) ->
         if err
           app.emit 'error',err if err
           return res.send 500
-
         return res.json candidates
 
   subscribe: (req,res,next)->
@@ -58,6 +57,4 @@ module.exports.FeedEvent = (app) ->
           return res.send 500
         if doc
           res.send 200
-
-
 
