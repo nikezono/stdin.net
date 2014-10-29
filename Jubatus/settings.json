@@ -1,0 +1,20 @@
+{
+  "method": "euclid_lsh",
+  "converter": {
+    "num_filter_types": {},
+    "num_filter_rules": [],
+    "string_filter_types": {},
+    "string_filter_rules": [],
+    "num_types": {},
+    "num_rules": [],
+    "string_types": {
+      "mecab": { "method": "dynamic", "function": "create", "path": "/opt/jubatus/lib/jubatus/plugin/libmecab_splitter.so"}
+    },
+    "string_rules": [
+        { "key": "text", "type": "mecab","sample_weight": "bin", "global_weight": "bin" }
+    ]
+  },
+  "parameter": {
+    "hash_num" : 10
+  }
+}

@@ -1,7 +1,7 @@
 {
   "name"        : "stdin.net",
   "script" : "server.coffee",
-  "PORT":3000,
+  "PORT":4000,
   "env":{
     "NODE_ENV":"production"
   },

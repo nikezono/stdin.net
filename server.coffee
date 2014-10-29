@@ -9,7 +9,7 @@
 http  = require "http"
 path  = require 'path'
 fs    = require 'fs'
-debug = require('debug')("unific/server")
+debug = require('debug')("stdin/server")
 
 # user library
 app   = require path.resolve('config','expressConfig')

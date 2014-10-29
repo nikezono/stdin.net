@@ -9,3 +9,7 @@ dump.rdb
 newrelic.js
 build/
 coverage/
+*.jubatus
+core
+nohup.out
+
