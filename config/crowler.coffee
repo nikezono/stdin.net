@@ -8,6 +8,7 @@ Crowler.coffee
 debug = require('debug')('stdin/config/crowler')
 _    = require 'underscore'
 Watcher = require 'rss-watcher'
+request = require 'request'
 
 exports = module.exports = (app)->
 
@@ -27,12 +28,12 @@ exports = module.exports = (app)->
       interval:60*3 # @todo frequency moduleがオカシイ
     watcher.on 'new article',(article)=>
       # あれば追加しない
-      Page.findOne link:article.link,->
+      Page.findOne link:article.link,=>
         return debug "Already Registerd Link Is Published.#{article.link}"
         debug "New Article. #{article.link}"
-        Page.upsertOneWithFeed article,feed,(err,page)->
+        Page.upsertOneWithFeed article,feed,(err,page)=>
           return app.emit 'error', err if err
-          setToJubatus page
+          @setToJubatus page
 
           # 擬似Populate
           pageObject = page.toObject()
@@ -44,9 +45,9 @@ exports = module.exports = (app)->
       return app.emit 'error', err if err
 
       for article in articles
-        Page.upsertOneWithFeed article,feed,(err,page)->
+        Page.upsertOneWithFeed article,feed,(err,page)=>
           return app.emit 'error', err if err
-          setToJubatus page
+          @setToJubatus page
           app.emit 'new feed',
             feed:feed
 

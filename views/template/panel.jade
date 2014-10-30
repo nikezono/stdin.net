@@ -3,9 +3,11 @@
   .panel-heading
     h5.panel-title
       a(target="_blank",href="{{article.link}}")
-        {{article.title}}
+        {{article.title}} &nbsp;
+      button.btn.btn-info.Similar(id="{{_id}}")
+        span.glyphicon.glyphicon-filter
+        |  Go
+
       span.pull-right
         {{feed.feed.title}}
-      span.pull-left
-        a(href="/api/page/{{_id}}/similar")
-          | ☆
+

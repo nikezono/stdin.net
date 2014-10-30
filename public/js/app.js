@@ -8,7 +8,7 @@
   $(function() {
 
     /* Configration & Initialize */
-    var App, articles, articlesView, httpApi, ioApi, path, refresh, socket;
+    var App, articles, articlesView, httpApi, ioApi, path, refresh, refreshPanelEvent, socket;
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g
     };
@@ -48,9 +48,30 @@
         }
         articles.reset(newArticles);
         notify.success("Refreshed");
+        refreshPanelEvent();
         if (callback) {
           return callback();
         }
+      });
+    };
+    refreshPanelEvent = function() {
+      return $('button.Similar').click(function(e) {
+        var query;
+        query = $(this).attr("id");
+        return httpApi.getSimilarArticles(query, function(err, data) {
+          var newArticles, page, _i, _len;
+          if (err) {
+            return notify.danger(err);
+          }
+          newArticles = [];
+          for (_i = 0, _len = data.length; _i < _len; _i++) {
+            page = data[_i];
+            newArticles.push(new Article(page));
+          }
+          articles.reset(newArticles);
+          notify.success("Refreshed");
+          return refreshPanelEvent();
+        });
       });
     };
     App = new Backbone.Marionette.Application();
@@ -59,7 +80,8 @@
       pages: '#Pages'
     });
     App.addInitializer(function(options) {
-      return App.pages.show(articlesView);
+      App.pages.show(articlesView);
+      return refreshPanelEvent();
     });
     $(document).ready(function() {
       return refresh(function() {

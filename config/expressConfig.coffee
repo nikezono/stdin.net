@@ -30,7 +30,7 @@ app = express()
 # env
 app.set 'env', process.env.NODE_ENV || 'development'
 app.set 'port', process.env.PORT || 3000
-app.set 'jubatus_url', process.env.JUBATUS_URL || "http://jubatus.stdin.net:4000" # 4000->開発環境
+app.set 'jubatus_url', process.env.JUBATUS_URL || "http://jubatus.stdin.net:4001" # 4001->開発環境
 
 # views
 app.set "views", path.resolve "views"
