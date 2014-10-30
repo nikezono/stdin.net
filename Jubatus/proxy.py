@@ -92,4 +92,4 @@ def neighbor():
 
 client = jubatus.NearestNeighbor("127.0.0.1",9200,"stdin.net")
 client.load("stdin.net")
-app.run(port=4001,debug=True)
+app.run(port=4001,host='0.0.0.0')

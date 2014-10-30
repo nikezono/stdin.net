@@ -17,10 +17,7 @@ exports = module.exports = (app)->
 
   # api
   addToSet:(feed)->
-    Feed.findOne url:feed.url,(err,doc)->
-      return app.emit 'error', err if err
-      return debug "already added. #{feed.url}" if doc
-      @createWatcher(feed)
+    @createWatcher(feed)
 
   createWatcher : (feed)->
     watcher = new Watcher(feed.url)
