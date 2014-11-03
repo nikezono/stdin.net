@@ -40,7 +40,14 @@ crowler.initialize()
 app.set 'crowler',crowler
 
 ### start hatena-hotentry crowler ###
-hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry') app
+hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry')
+hatenaCrowler(app)
+recursiveCrowl = ->
+  setTimeout ->
+    hatenaCrowler(app)
+    recursiveCrowl()
+  ,1000*60*60 # 1hour
+
 
 server.listen app.get("port"), ->
   debug "Express server listening on port " + app.get("port")
