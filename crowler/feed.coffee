@@ -5,9 +5,10 @@ Crowler.coffee
 
 ###
 
-debug = require('debug')('stdin/config/crowler')
+debug = require('debug')('stdin/crowler/feed')
 domain = require('domain')
 _    = require 'underscore'
+async = require 'async'
 Watcher = require 'rss-watcher'
 request = require 'request'
 
@@ -35,7 +36,7 @@ exports = module.exports = (app)->
           debug "New Article. #{article.link}"
           Page.upsertOneWithFeed article,feed,(err,page)=>
             return app.emit 'error', err if err
-            @setToJubatus page
+            @setToJubatus.push page
 
             # 擬似Populate
             pageObject = page.toObject()
@@ -49,7 +50,7 @@ exports = module.exports = (app)->
         for article in articles
           Page.upsertOneWithFeed article,feed,(err,page)=>
             return app.emit 'error', err if err
-            @setToJubatus page
+            @setToJubatus.push page
             app.emit 'new feed',
               feed:feed
 
@@ -59,21 +60,35 @@ exports = module.exports = (app)->
       for feed in feeds
         @createWatcher(feed)
 
-  setToJubatus:(page)->
-    request page.link,(err,res,body)->
-      return app.emit 'error', err if err
-      return debug "error setToJubatus:#{page.link} #{res.statusCode}" if res.statusCode isnt 200
+  # Jubatusにセットするキュー
+  setToJubatus:async.queue (page,callback)->
+    d = domain.create()
+    d.on 'error',(err)->
+      app.emit 'error',err
+      callback()
+    d.run ->
 
-      request.post
-        url:app.get('jubatus_url')+"/set"
-        body:
-          id:page._id
-          text:getExtractContent(body)
-        json:true
-      ,(err,response,body)->
-        return debug err if err
-        debug "Page #{page.article.title} has set in Jubatus"
-        debug "New Page Founded or Updated. #{page.article.title}"
+      request page.link,(err,res,body)->
+        if err
+          app.emit 'error', err
+          return callback()
+        if res.statusCode isnt 200
+          debug "error setToJubatus:#{page.link} #{res.statusCode}"
+          return callback()
+
+        request.post
+          url:app.get('jubatus_url')+"/set"
+          body:
+            id:page._id
+            text:getExtractContent(body)
+          json:true
+        ,(err,response,body)->
+          if err or response.statusCode isnt 200
+            debug "error postToJubatusProxy:#{page.link} #{res.statusCode}"
+            return callback()
+          debug "Page #{page.article.title} has set in Jubatus"
+          return callback()
+    ,2
 
 # 本文抽出
 # とりあえずサニタイズ,タグ外しのみ

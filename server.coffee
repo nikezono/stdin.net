@@ -52,3 +52,5 @@ recursiveCrowl = ->
 server.listen app.get("port"), ->
   debug "Express server listening on port " + app.get("port")
 
+process.on 'uncaughtException',(err)->
+  debug err
