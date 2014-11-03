@@ -14,7 +14,9 @@ module.exports.PageEvent = (app) ->
 
   getLatestPages: (req,res,next)->
 
-    Page.find({}).populate('feed').sort('article.pubDate':-1).limit(100).exec (err,pages)->
+    limit = req.query.limit or 100
+
+    Page.find({}).populate('feed').sort('article.pubDate':-1).limit(limit).exec (err,pages)->
       if err
         app.emit 'error', err
         return res.send 500

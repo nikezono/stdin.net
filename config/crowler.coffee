@@ -60,16 +60,22 @@ exports = module.exports = (app)->
         @createWatcher(feed)
 
   setToJubatus:(page)->
-    request.post
-      url:app.get('jubatus_url')+"/set"
-      body:
-        id:page._id
-        text:page.article.description # @note 本文fetchしてsanitizeして使ったほうがいいかも
-      json:true
-    ,(err,response,body)->
-      return debug err if err
-      debug "Page #{page.article.title} has set in Jubatus"
-      debug "New Page or update. #{page.article.title}"
+    request page.link,(err,res,body)->
+      return app.emit 'error', err if err
+      return debug "error setToJubatus:#{page.link} #{res.statusCode}" if res.statusCode isnt 200
 
+      request.post
+        url:app.get('jubatus_url')+"/set"
+        body:
+          id:page._id
+          text:getExtractContent(body)
+        json:true
+      ,(err,response,body)->
+        return debug err if err
+        debug "Page #{page.article.title} has set in Jubatus"
+        debug "New Page Founded or Updated. #{page.article.title}"
 
-
+# 本文抽出
+# とりあえずサニタイズ,タグ外しのみ
+getExtractContent = (string)->
+  return string.replace /<.+?>/g," "
