@@ -35,9 +35,12 @@ server = http.createServer app
 io app,server
 
 ### start rss crowler ###
-crowler = require(path.resolve 'config','crowler') app
+crowler = require(path.resolve 'crowler','feed') app
 crowler.initialize()
 app.set 'crowler',crowler
+
+### start hatena-hotentry crowler ###
+hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry') app
 
 server.listen app.get("port"), ->
   debug "Express server listening on port " + app.get("port")

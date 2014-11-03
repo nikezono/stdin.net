@@ -7,6 +7,7 @@
 debug  = require('debug')('stdin/events/feed')
 _      = require 'underscore'
 async  = require 'async'
+domain = require 'domain'
 finder = require 'find-rss'
 finder.setOptions
   favicon:true
@@ -20,9 +21,6 @@ module.exports.FeedEvent = (app) ->
   # @param url
   findFeed: (req,res,next)->
     url = req.query.url
-
-    return res.send 400 if not url or _.isEmpty url
-
     # Feedが既にあればドキュメントを返す
     Feed.findOne
       url:url
@@ -30,11 +28,22 @@ module.exports.FeedEvent = (app) ->
       app.emit 'error',err if err
       return res.json feed if feed
 
-      # Find-RSS
-      finder url, (err,candidates)=>
+      @findFeedAlias url,(err,urls)->
+        return res.status(500).send err if err
+        return res.send urls
+
+      return res.send 400 if not url or _.isEmpty url
+
+  findFeedAlias:(url,callback)->
+    # Find-RSS
+    d = domain.create()
+    d.on 'error',(err)-> app.emit 'error',err
+
+    d.run ->
+      finder url,(err,candidates)=>
         if err
           app.emit 'error',err if err
-          return res.send 500
+          return callback err,null
 
         # 選択させずに全て登録する
         urls = []
@@ -46,7 +55,7 @@ module.exports.FeedEvent = (app) ->
             if doc
               alreadyUrls.push doc.feed.title
               return cb()
-
+            debug "Register:#{candidate.url}"
             # Feed 作成
             Feed.create
               url:candidate.url
@@ -59,9 +68,10 @@ module.exports.FeedEvent = (app) ->
               urls.push doc.feed.title
               return cb()
         ,->
-          res.send
+          callback null,
             added:urls
             alreadyAdded:alreadyUrls
+
 
   # POST /api/feed/subscribe
   # @param feed
