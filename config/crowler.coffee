@@ -24,7 +24,7 @@ exports = module.exports = (app)->
     d = domain.create()
     d.on 'error',(err)->
       app.emit 'error',err
-    d.run ->
+    d.run =>
       watcher = new Watcher(feed.url)
       watcher.set
         interval:60*3 # @todo frequency moduleがオカシイ

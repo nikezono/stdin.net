@@ -15,6 +15,6 @@
     ]
   },
   "parameter": {
-    "hash_num" : 10
+    "hash_num" : 1000
   }
 }
