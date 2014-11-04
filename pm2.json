@@ -3,6 +3,7 @@
   "script" : "server.coffee",
   "PORT":4000,
   "env":{
+    "DEBUG":"stdin*",
     "NODE_ENV":"production"
   },
   "watch"       : "true",

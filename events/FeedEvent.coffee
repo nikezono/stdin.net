@@ -51,7 +51,9 @@ module.exports.FeedEvent = (app) ->
         async.forEach candidates, (candidate,cb)->
           # 既にある場合は弾く
           Feed.findOne url:candidate.url,(err,doc)->
-            return cb() app.emit 'error',err if err
+            if err
+              app.emit 'error',err if err
+              return cb()
             if doc
               alreadyUrls.push doc.feed.title
               return cb()
