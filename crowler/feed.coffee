@@ -26,6 +26,7 @@ exports = module.exports = (app)->
     d.on 'error',(err)->
       app.emit 'error',err
     d.run =>
+      debug "New Watcher:#{feed.url}"
       watcher = new Watcher(feed.url)
       watcher.set
         interval:60*3 # @todo frequency moduleがオカシイ

@@ -25,8 +25,8 @@ PageSchema = new Mongo.Schema
   content:     { type: String, default:"" }
 
 # Validations
-PageSchema.path('link').validate (value)->
-  return link is null or link is undefined or link is "" or "http".test link
+PageSchema.path('link').validate (link)->
+  return !(link is null or link is undefined or link is "" or not /http/.test link)
 ,"link url notfound error"
 
 # Middleware
@@ -34,17 +34,19 @@ PageSchema.post 'save',(doc)->
   analyzeQueue.push doc
 
 # Model Methods
+
+# upsertの代わり:findAndUpdateだとmiddlewareが発火しない為分けた
 PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
-  @findOneAndUpdate
-    link: article.link
-  ,
-    article:article
-    feed:feed._id
-  ,
-    upsert:true
-  ,(err,page)->
+  @findOne link:article.link,(err,doc)=>
     return callback err,null if err
-    return callback null,page
+    return callback null,doc if doc
+    @create
+      link: article.link
+      article:article
+      feed:feed._id
+    ,(err,doc)->
+      return callback err,null if err
+      return callback null,doc
 
 exports.Page = Mongo.model 'pages', PageSchema
 
