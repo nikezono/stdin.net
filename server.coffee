@@ -13,7 +13,6 @@ debug = require('debug')("stdin/server")
 
 # user library
 app   = require path.resolve('config','expressConfig')
-io    = require path.resolve('config','ioConfig')
 
 ### Detect NewRelic Enability ###
 newrelicEnable = (
@@ -30,9 +29,11 @@ if newrelicEnable
     debug err
   #   newrelic.postErrorEvent 的な何か
 
+process.on 'uncaughtException',(err)->
+  debug err
+
 ### start socket.io and http server ###
 server = http.createServer app
-io app,server
 
 ### start rss crowler ###
 crowler = require(path.resolve 'crowler','feed') app
@@ -52,5 +53,3 @@ recursiveCrowl = ->
 server.listen app.get("port"), ->
   debug "Express server listening on port " + app.get("port")
 
-process.on 'uncaughtException',(err)->
-  debug err

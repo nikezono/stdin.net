@@ -11,23 +11,10 @@ $ ->
     interpolate: /\{\{(.+?)\}\}/g
 
   path = (window.location.pathname).substr(1)
-  socket = io "/#{path}"
 
   httpApi = httpApiWrapper
-  ioApi   = ioApiWrapper(socket)
 
-  socket.on "connect",->
-    notify.info "Connected."
-
-  socket.on "error",(err)->
-    notify.danger err
-
-  socket.on "serverError",(err)->
-    console.error err
-    console.trace()
-    alert.danger("Error")
-
-  # Model & View Initialize
+ # Model & View Initialize
   articles       = new Articles()
 
   articlesView   = new ArticlesView
@@ -76,20 +63,6 @@ $ ->
   $(document).ready ->
     refresh ->
       App.start()
-
-  # 繋ぎ直した時
-  socket.on 'reconnect',->
-    refresh()
-
-  ## Socket.io EventHandlers ##
-  socket.on "new feed", (data)->
-    console.log data
-    notify.info "New Feed:#{data.feed.url}"
-    refresh()
-  socket.on "new article", (data)->
-    console.log data
-    notify.info "New Article:#{data.page.article.title}"
-    Articles.unshift new Article(data.page)
 
   ## Navigation Event @note backboneに落としこむ
   $('button#Find').click ->
