@@ -55,7 +55,7 @@ module.exports.FeedEvent = (app) ->
               app.emit 'error',err if err
               return cb()
             if doc
-              alreadyUrls.push doc.feed.title
+              alreadyUrls.push doc.feed.link
               return cb()
             debug "Register:#{candidate.url}"
             # Feed 作成
@@ -67,7 +67,7 @@ module.exports.FeedEvent = (app) ->
                 app.emit 'error',err if err
                 return cb()
               app.get('crowler').addToSet doc
-              urls.push doc.feed.title
+              urls.push doc.feed.link
               return cb()
         ,->
           callback null,

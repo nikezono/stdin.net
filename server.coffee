@@ -24,10 +24,10 @@ newrelicEnable = (
 console.log "using newrelic:#{newrelicEnable}"
 if newrelicEnable
   require 'newrelic'
-  # @todo 以下
-  app.on "error",(err)->
-    debug err
-  #   newrelic.postErrorEvent 的な何か
+
+# @todo エラー処理はNewRelicに投げる
+app.on "error",(err)->
+  debug err
 
 process.on 'uncaughtException',(err)->
   debug err
