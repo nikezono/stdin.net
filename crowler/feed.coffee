@@ -67,6 +67,7 @@ exports = module.exports = (app)->
       app.emit 'error',err
       callback()
     d.run ->
+      return if not page.link or page.link is "" or page.link is null
 
       request page.link,(err,res,body)->
         if err
