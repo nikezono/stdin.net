@@ -17,9 +17,14 @@ request = require 'request'
 debug = require('debug')('stdin/models/page')
 
 PageSchema = new Mongo.Schema
-  link:        { type: String, index:{ unique:true } }
+  link:        { type: String, index:{ unique:true }, required:true }
   feed:        { type: Mongo.Schema.Types.ObjectId, ref: 'feeds' }
   article:     { type: Mongo.Schema.Types.Mixed }
+
+PageSchema.path('link').validate (value)->
+  return link is null or link is undefined or link is "" or "http".test link
+,"link url notfound error"
+
 
 PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
   @findOneAndUpdate
