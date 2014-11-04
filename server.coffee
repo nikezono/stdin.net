@@ -47,7 +47,7 @@ recursiveCrowl = ->
   setTimeout ->
     hatenaCrowler(app)
     recursiveCrowl()
-  ,1000*60*60 # 1hour
+  ,1000*60*60*3 # 3hour
 
 
 server.listen app.get("port"), ->

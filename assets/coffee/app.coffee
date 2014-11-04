@@ -33,21 +33,7 @@ $ ->
         newArticles.push new Article(article)
       articles.reset newArticles
       notify.success "Refreshed"
-      refreshPanelEvent()
       return callback() if callback
-
-  refreshPanelEvent = ->
-    $('button.Similar').click (e)->
-      query = $(this).attr("id")
-      httpApi.getSimilarArticles query,(err,data)->
-        return notify.danger err if err
-        newArticles = []
-        for page in data
-          newArticles.push new Article(page)
-        articles.reset newArticles
-        notify.success "Refreshed"
-        refreshPanelEvent()
-
 
   ## Marionette ##
   App = new Backbone.Marionette.Application()
@@ -57,7 +43,6 @@ $ ->
 
   App.addInitializer (options)->
     App.pages.show articlesView
-    refreshPanelEvent()
 
   # 初回記事読み込み
   $(document).ready ->

@@ -3,11 +3,10 @@
   .panel-heading
     h5.panel-title
       a(target="_blank",href="{{article.link}}")
-        {{article.title}} &nbsp;
-      button.btn.btn-info.Similar(id="{{_id}}")
-        span.glyphicon.glyphicon-filter
-        |  Go
+        | {{article.title}} &nbsp;
+      small(data-livestamp="{{timestamp}}")
+        | &nbsp;
 
       span.pull-right
-        {{feed.feed.title}}
+        | {{feed.feed.title}}
 

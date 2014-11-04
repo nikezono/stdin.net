@@ -8,25 +8,12 @@
   $(function() {
 
     /* Configration & Initialize */
-    var App, articles, articlesView, httpApi, ioApi, path, refresh, refreshPanelEvent, socket;
+    var App, articles, articlesView, httpApi, path, refresh;
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g
     };
     path = window.location.pathname.substr(1);
-    socket = io("/" + path);
     httpApi = httpApiWrapper;
-    ioApi = ioApiWrapper(socket);
-    socket.on("connect", function() {
-      return notify.info("Connected.");
-    });
-    socket.on("error", function(err) {
-      return notify.danger(err);
-    });
-    socket.on("serverError", function(err) {
-      console.error(err);
-      console.trace();
-      return alert.danger("Error");
-    });
     articles = new Articles();
     articlesView = new ArticlesView({
       collection: articles
@@ -48,30 +35,9 @@
         }
         articles.reset(newArticles);
         notify.success("Refreshed");
-        refreshPanelEvent();
         if (callback) {
           return callback();
         }
-      });
-    };
-    refreshPanelEvent = function() {
-      return $('button.Similar').click(function(e) {
-        var query;
-        query = $(this).attr("id");
-        return httpApi.getSimilarArticles(query, function(err, data) {
-          var newArticles, page, _i, _len;
-          if (err) {
-            return notify.danger(err);
-          }
-          newArticles = [];
-          for (_i = 0, _len = data.length; _i < _len; _i++) {
-            page = data[_i];
-            newArticles.push(new Article(page));
-          }
-          articles.reset(newArticles);
-          notify.success("Refreshed");
-          return refreshPanelEvent();
-        });
       });
     };
     App = new Backbone.Marionette.Application();
@@ -80,26 +46,12 @@
       pages: '#Pages'
     });
     App.addInitializer(function(options) {
-      App.pages.show(articlesView);
-      return refreshPanelEvent();
+      return App.pages.show(articlesView);
     });
     $(document).ready(function() {
       return refresh(function() {
         return App.start();
       });
-    });
-    socket.on('reconnect', function() {
-      return refresh();
-    });
-    socket.on("new feed", function(data) {
-      console.log(data);
-      notify.info("New Feed:" + data.feed.url);
-      return refresh();
-    });
-    socket.on("new article", function(data) {
-      console.log(data);
-      notify.info("New Article:" + data.page.article.title);
-      return Articles.unshift(new Article(data.page));
     });
     return $('button#Find').click(function() {
       var query;

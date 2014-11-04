@@ -13,6 +13,7 @@ Mongo = require 'mongoose'
 async = require 'async'
 _     = require 'underscore'
 request = require 'request'
+domain = require 'domain'
 
 debug = require('debug')('stdin/models/page')
 
@@ -31,6 +32,7 @@ PageSchema.path('link').validate (link)->
 
 # Middleware
 PageSchema.post 'save',(doc)->
+  debug "Saved: #{doc.link}"
   analyzeQueue.push doc
 
 # Model Methods
@@ -55,6 +57,8 @@ exports.Page = Mongo.model 'pages', PageSchema
 # 本文を取得し、特徴語を抽出するキュー
 analyzeQueue = async.queue (page,callback)->
 
+  debug "AnalyzeQueue: #{page.link} Start."
+
   # ここでのエラーはイベントだけ吐いて飲み込む
   d = domain.create()
   d.on 'error',(err)->
@@ -74,7 +78,7 @@ analyzeQueue = async.queue (page,callback)->
       page.update
         body:body
       ,save (err)->
-        app.emit 'error',err
+        return app.emit 'error',err if err
         debug "Analyzed. #{page.link}"
   ,2
 

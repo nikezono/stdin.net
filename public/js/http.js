@@ -10,14 +10,7 @@
       });
     },
     getLatestArticles: function(callback) {
-      return $.getJSON("/api/page/latest").success(function(data) {
-        return callback(null, data);
-      }).error(function(err) {
-        return callback(err, null);
-      });
-    },
-    getSimilarArticles: function(id, callback) {
-      return $.getJSON("/api/page/" + id + "/similar").success(function(data) {
+      return $.getJSON("/api/page/latest?limit=150").success(function(data) {
         return callback(null, data);
       }).error(function(err) {
         return callback(err, null);

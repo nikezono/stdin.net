@@ -11,15 +11,7 @@ window.httpApiWrapper =
 
   # 最新記事取得
   getLatestArticles:(callback)->
-    $.getJSON "/api/page/latest"
-    .success (data)->
-      callback null,data
-    .error (err)->
-      callback err,null
-
-  # 類似記事取得
-  getSimilarArticles:(id,callback)->
-    $.getJSON "/api/page/#{id}/similar"
+    $.getJSON "/api/page/latest?limit=150"
     .success (data)->
       callback null,data
     .error (err)->
