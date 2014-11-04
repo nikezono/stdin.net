@@ -50,6 +50,25 @@ $ ->
       App.start()
 
   ## Navigation Event @note backboneに落としこむ
+
+  # Refresh button
+  $('#Refresh').click ->
+    animateFlag = true
+    animate = ->
+      $("#Refresh").animate
+        zIndex: 1
+      ,
+        duration: 500
+        step: (now) ->
+          return $(this).css transform: "rotate(" + (now * 360) + "deg)"
+        complete: ->
+          $("#Refresh").css('zIndex', 0)
+          animate() if animateFlag
+    animate()
+    refresh ->
+      animateFlag = false
+
+  # Find Button
   $('button#Find').click ->
     query = $('#FindQuery').val()
     httpApi.findFeed query,(err,data)->
@@ -58,4 +77,3 @@ $ ->
         notify.success "Added: #{title}"
       for title in data.alreadyAdded
         notify.info "Already Added:#{title}"
-

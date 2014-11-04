@@ -18,7 +18,10 @@ body
     .row
       .col-md-12.col-lg-12.col-xs-12.center-block
         .page-header
-          h1= 'stdin.net'
+          h1
+            | stdin.net &nbsp;
+            small
+              span.glyphicon.glyphicon-refresh#Refresh
 
         block content
 

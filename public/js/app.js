@@ -53,6 +53,32 @@
         return App.start();
       });
     });
+    $('#Refresh').click(function() {
+      var animate, animateFlag;
+      animateFlag = true;
+      animate = function() {
+        return $("#Refresh").animate({
+          zIndex: 1
+        }, {
+          duration: 500,
+          step: function(now) {
+            return $(this).css({
+              transform: "rotate(" + (now * 360) + "deg)"
+            });
+          },
+          complete: function() {
+            $("#Refresh").css('zIndex', 0);
+            if (animateFlag) {
+              return animate();
+            }
+          }
+        });
+      };
+      animate();
+      return refresh(function() {
+        return animateFlag = false;
+      });
+    });
     return $('button#Find').click(function() {
       var query;
       query = $('#FindQuery').val();

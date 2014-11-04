@@ -77,7 +77,7 @@ analyzeQueue = async.queue (page,callback)->
       # @todo キーワード抽出
       page.update
         body:body
-      ,save (err)->
+      ,(err)->
         return app.emit 'error',err if err
         debug "Analyzed. #{page.link}"
   ,2

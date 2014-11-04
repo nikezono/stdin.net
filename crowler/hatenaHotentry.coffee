@@ -47,6 +47,6 @@ module.exports = (app)->
           else
             debug "Find-RSS #{url} is reach End"
           return callback()
-        ,3 # キュー数
+      ,1 # ワーカー数1で固定
       recursiveFind.push entryUrl
 

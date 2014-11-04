@@ -2,7 +2,7 @@
   window.Article = Backbone.Model.extend({
     initialize: function(attr, opts) {
       var timestamp;
-      timestamp = new Date(this.pubDate) / 1000;
+      timestamp = new Date(this.attributes.article.pubDate) / 1000;
       return this.set("timestamp", timestamp);
     }
   });
