@@ -11,9 +11,6 @@ path  = require 'path'
 fs    = require 'fs'
 debug = require('debug')("stdin/server")
 
-# user library
-app   = require path.resolve('config','expressConfig')
-
 ### Detect NewRelic Enability ###
 newrelicEnable = (
   process.env.NEW_RELIC_APP_NAME? and
@@ -24,7 +21,8 @@ newrelicEnable = (
 console.log "using newrelic:#{newrelicEnable}"
 newrelic = require 'newrelic' if newrelicEnable
 
-# @todo エラー処理はNewRelicに投げる
+# user library
+app   = require path.resolve('config','expressConfig')
 app.on "error",(err)->
   newrelic.noticeError err if newrelicEnable
   debug err

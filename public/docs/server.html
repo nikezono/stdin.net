@@ -69,21 +69,6 @@ debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'de
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>user library</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>app   = <span class="hljs-built_in">require</span> path.resolve(<span class="hljs-string">'config'</span>,<span class="hljs-string">'expressConfig'</span>)</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
-              </div>
               <h2 id="detect-newrelic-enability">Detect NewRelic Enability</h2>
 
             </div>
@@ -100,17 +85,18 @@ newrelic = <span class="hljs-built_in">require</span> <span class="hljs-string">
         </li>
         
         
-        <li id="section-6">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>@todo エラー処理はNewRelicに投げる</p>
+              <p>user library</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>app.<span class="hljs-literal">on</span> <span class="hljs-string">"error"</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+            <div class="content"><div class='highlight'><pre>app   = <span class="hljs-built_in">require</span> path.resolve(<span class="hljs-string">'config'</span>,<span class="hljs-string">'expressConfig'</span>)
+app.<span class="hljs-literal">on</span> <span class="hljs-string">"error"</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
   newrelic.noticeError err <span class="hljs-keyword">if</span> newrelicEnable
   debug err
 
@@ -122,11 +108,11 @@ process.<span class="hljs-literal">on</span> <span class="hljs-string">'uncaught
         </li>
         
         
-        <li id="section-7">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>初期化処理</p>
 
@@ -140,11 +126,11 @@ app.get(<span class="hljs-string">'models'</span>).Page.syncRandom (err,result)-
         </li>
         
         
-        <li id="section-8">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <h1 id="-">クローラ起動</h1>
 
@@ -153,11 +139,11 @@ app.get(<span class="hljs-string">'models'</span>).Page.syncRandom (err,result)-
         </li>
         
         
-        <li id="section-9">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>RSSクローラ</p>
 
@@ -170,11 +156,11 @@ app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>はてなクローラ</p>
 
