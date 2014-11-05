@@ -14,16 +14,7 @@ head
   link(rel="icon",         href="/favicon.ico",type="image/x-icon")
 
 body
-  .container
-    .row
-      .col-md-12.col-lg-12.col-xs-12.center-block
-        .page-header
-          h1
-            | stdin.net &nbsp;
-            small
-              span.glyphicon.glyphicon-refresh#Refresh
-
-        block content
+  block content
 
   #Template
     script#articleTemplate(type="text/template")
@@ -40,14 +31,14 @@ body
     script(src="//cdnjs.cloudflare.com/ajax/libs/backbone.marionette/2.0.3/backbone.marionette.min.js")
     script(src="//cdnjs.cloudflare.com/ajax/libs/livestamp/1.1.2/livestamp.min.js")
 
-    script(src="/vendor/js/jquery.bootstrap-growl.min.js")
+    script(src="/public/vendor/js/jquery.bootstrap-growl.min.js")
 
     //- User Script
-    script(src="/js/notify.js" type="application/javascript")
-    script(src="/js/http.js"   type="application/javascript")
-    script(src="/js/model.js"  type="application/javascript")
-    script(src="/js/view.js"   type="application/javascript")
-    script(src="/js/app.js" type="application/javascript")
+    script(src="/public/js/notify.js" type="application/javascript")
+    script(src="/public/js/http.js"   type="application/javascript")
+    script(src="/public/js/model.js"  type="application/javascript")
+    script(src="/public/js/view.js"   type="application/javascript")
+    script(src="/public/js/app.js" type="application/javascript")
 
 
 

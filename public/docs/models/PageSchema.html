@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>#</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+  pageSchema.coffee
+  準拠:feedParser
+  <span class="hljs-attribute">https</span>:<span class="hljs-regexp">//gi</span>thub.com/danmactough/node-feedparser<span class="hljs-comment">#list-of-article-properties</span>
+
+  * link         [String]     Identifier
+  * feed         [ObjectId]   親FeedのId
+  * article      [Object]     記事データ</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+Mongo = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose'</span>
+async = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
+_     = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
+request = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span>
+domain = <span class="hljs-built_in">require</span> <span class="hljs-string">'domain'</span>
+
+debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'stdin/models/page'</span>)
+
+PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
+  <span class="hljs-attribute">link</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">index</span>:{ <span class="hljs-attribute">unique</span>:<span class="hljs-literal">true</span> }, <span class="hljs-attribute">required</span>:<span class="hljs-literal">true</span> }
+  <span class="hljs-attribute">feed</span>:        { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.ObjectId, <span class="hljs-attribute">ref</span>: <span class="hljs-string">'feeds'</span> }
+  <span class="hljs-attribute">article</span>:     { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed }
+  <span class="hljs-attribute">body</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
+  <span class="hljs-attribute">keywords</span>:    { <span class="hljs-attribute">type</span>: [String], <span class="hljs-attribute">default</span>:[] }
+  <span class="hljs-attribute">content</span>:     { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Validations</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>PageSchema.path(<span class="hljs-string">'link'</span>).validate (link)-&gt;
+  <span class="hljs-keyword">return</span> !(link <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span> <span class="hljs-keyword">or</span> link <span class="hljs-keyword">is</span> <span class="hljs-literal">undefined</span> <span class="hljs-keyword">or</span> link <span class="hljs-keyword">is</span> <span class="hljs-string">""</span> <span class="hljs-keyword">or</span> <span class="hljs-keyword">not</span> <span class="hljs-regexp">/http/</span>.test link)
+,<span class="hljs-string">"link url notfound error"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Middleware</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>PageSchema.post <span class="hljs-string">'save'</span>,<span class="hljs-function"><span class="hljs-params">(doc)</span>-&gt;</span>
+  debug <span class="hljs-string">"Saved: <span class="hljs-subst">#{doc.link}</span>"</span>
+  analyzeQueue.push doc</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Model Methods</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>upsertの代わり:findAndUpdateだとmiddlewareが発火しない為分けた</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>PageSchema.statics.upsertOneWithFeed = <span class="hljs-function"><span class="hljs-params">(article,feed,callback)</span>-&gt;</span>
+  <span class="hljs-property">@findOne</span> <span class="hljs-attribute">link</span>:article.link,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>=&gt;</span>
+    <span class="hljs-keyword">return</span> callback err,<span class="hljs-literal">null</span> <span class="hljs-keyword">if</span> err
+    <span class="hljs-keyword">return</span> callback <span class="hljs-literal">null</span>,doc <span class="hljs-keyword">if</span> doc
+    <span class="hljs-property">@create</span>
+      <span class="hljs-attribute">link</span>: article.link
+      <span class="hljs-attribute">article</span>:article
+      <span class="hljs-attribute">feed</span>:feed._id
+    ,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>
+      <span class="hljs-keyword">return</span> callback err,<span class="hljs-literal">null</span> <span class="hljs-keyword">if</span> err
+      <span class="hljs-keyword">return</span> callback <span class="hljs-literal">null</span>,doc
+
+exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Utility</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>本文を取得し、特徴語を抽出するキュー</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>analyzeQueue = async.queue (page,callback)-&gt;
+
+  debug <span class="hljs-string">"AnalyzeQueue: <span class="hljs-subst">#{page.link}</span> Start."</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>ここでのエラーはイベントだけ吐いて飲み込む</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  d = domain.create()
+  d.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+    app.emit <span class="hljs-string">'error'</span>,err
+    <span class="hljs-keyword">return</span> callback()
+  d.run -&gt;
+
+    request page.link,<span class="hljs-function"><span class="hljs-params">(err,res,body)</span>-&gt;</span>
+      <span class="hljs-keyword">if</span> err
+        app.emit <span class="hljs-string">'error'</span>, err
+        <span class="hljs-keyword">return</span> callback()
+      <span class="hljs-keyword">if</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
+        debug <span class="hljs-string">"error analyzeQueue:<span class="hljs-subst">#{page.link}</span> <span class="hljs-subst">#{res.statusCode}</span>"</span>
+        <span class="hljs-keyword">return</span> callback()</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>@todo キーワード抽出</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      page.update
+        <span class="hljs-attribute">body</span>:body
+      ,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+        <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+        debug <span class="hljs-string">"Analyzed. <span class="hljs-subst">#{page.link}</span>"</span>
+  ,<span class="hljs-number">2</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -18,12 +18,12 @@ bodyParser   = require 'body-parser'
 morgan       = require 'morgan'
 
 # Static Files
-connect =
-  static: (require 'st')
-    url: '/'
-    path: path.resolve 'public'
-    index: no
-    passthrough: yes
+st = require('st')(
+  url: '/public'
+  path: path.resolve 'public'
+  index: yes
+  passthrough: yes
+)
 
 app = express()
 
@@ -45,7 +45,7 @@ app.use morgan('combined')
 app.use bodyParser.urlencoded({extended:false})
 app.use bodyParser.json()
 app.use errorhandler() if app.get('env') is 'development'
-app.use connect.static
+app.use st
 
 # Routes
 (require path.resolve 'routes','httpRoutes') app

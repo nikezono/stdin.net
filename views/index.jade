@@ -1,15 +1,33 @@
 extends layout
 
 block content
+  .container
+    .row
+      .col-md-12.col-lg-12.col-xs-12.center-block
+        .page-header
+          h1
+            | stdin.net &nbsp;
+            small
+              span.glyphicon.glyphicon-refresh#Refresh
 
-  #Navigation.col-md-12
-    .input-group
-      input#FindQuery.form-control(type="text",
-        placehoder="Search URL or Input Feed URL"
-      )
-      span.input-group-btn
-        button.btn.btn-primary#Find
-          span.glyphicon.glyphicon-search
-          |  Find
+              .pull-right
+                ul
+                  li
+                    a(href="/public/docs")
+                      | Document
+                  li
+                    a(href="/public/apidocs")
+                      | API Document
 
-  #Pages.col-md-12
+
+      #Navigation.col-md-12
+        .input-group
+          input#FindQuery.form-control(type="text",
+            placehoder="Search URL or Input Feed URL"
+          )
+          span.input-group-btn
+            button.btn.btn-primary#Find
+              span.glyphicon.glyphicon-search
+              |  Find
+
+      #Pages.col-md-12

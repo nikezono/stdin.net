@@ -5,6 +5,7 @@ module.exports = (grunt) ->
   _ = require 'underscore'
   require 'coffee-errors'
 
+  grunt.loadNpmTasks 'grunt-docco-dir'
   grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-coffeelint'
@@ -39,6 +40,7 @@ module.exports = (grunt) ->
           { expand: yes, cwd: './', src: [ '*.coffee' ] }
           { expand: yes, cwd: 'models/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'config/', src: [ '**/*.coffee' ] }
+          { expand: yes, cwd: 'crowler/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'events/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'routes/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'assets/', src: [ '**/*.coffee' ] }
@@ -54,11 +56,12 @@ module.exports = (grunt) ->
           'events/**/*.coffee'
           'config/**/*.coffee'
           'routes/**/*.coffee'
+          'crowler/**/*.coffee'
           'views/**/*.jade'
           'assets/**//*.coffee'
           'test/**/*.coffee'
         ]
-        tasks: [ 'coffeelint','coffee','mochaTest:spec' ]
+        tasks: [ 'clean:docco','docco','coffeelint','coffee','mochaTest:spec' ]
 
     coffee:
       clientjs:
@@ -88,6 +91,24 @@ module.exports = (grunt) ->
         src: ['coverage/']
       build:
         src: ['build/']
+      docco:
+        src: ["public/docs/"]
+
+    # Doc
+    docco:
+      debug:
+        src: [
+          '*.coffee'
+          'models/**/*.coffee'
+          'events/**/*.coffee'
+          'config/**/*.coffee'
+          'routes/**/*.coffee'
+          'crowler/**/*.coffee'
+          'assets/**/*.coffee'
+          'test/**/*.coffee'
+        ]
+        options:
+          output: 'public/docs/'
 
     # Istanbul(MochaTest+Coverage Report)
     instrument:

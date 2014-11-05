@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>#</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+  FeedEvent.coffee</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+debug  = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'stdin/events/feed'</span>)
+_      = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
+async  = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
+domain = <span class="hljs-built_in">require</span> <span class="hljs-string">'domain'</span>
+finder = <span class="hljs-built_in">require</span> <span class="hljs-string">'find-rss'</span>
+finder.setOptions
+  <span class="hljs-attribute">favicon</span>:<span class="hljs-literal">true</span>
+  <span class="hljs-attribute">getDetail</span>:<span class="hljs-literal">true</span>
+
+<span class="hljs-built_in">module</span>.exports.FeedEvent = <span class="hljs-function"><span class="hljs-params">(app)</span> -&gt;</span>
+
+  Feed        = app.get(<span class="hljs-string">'models'</span>).Feed</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>GET /api/feed/find
+@param url</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">findFeed</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+    url = req.query.url</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Feedが既にあればドキュメントを返す</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Feed.findOne
+      <span class="hljs-attribute">url</span>:url
+    ,<span class="hljs-function"><span class="hljs-params">(err,feed)</span>-&gt;</span>
+      app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+      <span class="hljs-keyword">return</span> res.json feed <span class="hljs-keyword">if</span> feed
+
+      <span class="hljs-property">@findFeedAlias</span> url,<span class="hljs-function"><span class="hljs-params">(err,urls)</span>-&gt;</span>
+        <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">500</span>).send err <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> res.send urls
+
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> url <span class="hljs-keyword">or</span> _.isEmpty url
+
+  <span class="hljs-attribute">findFeedAlias</span>:<span class="hljs-function"><span class="hljs-params">(url,callback)</span>-&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Find-RSS</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    d = domain.create()
+    d.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> app.emit <span class="hljs-string">'error'</span>,err
+
+    d.run -&gt;
+      finder url,<span class="hljs-function"><span class="hljs-params">(err,candidates)</span>=&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+          <span class="hljs-keyword">return</span> callback err,<span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>選択させずに全て登録する</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>        urls = []
+        alreadyUrls = []
+        async.forEach candidates, <span class="hljs-function"><span class="hljs-params">(candidate,cb)</span>-&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>既にある場合は弾く</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>          Feed.findOne <span class="hljs-attribute">url</span>:candidate.url,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>
+            <span class="hljs-keyword">if</span> err
+              app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+              <span class="hljs-keyword">return</span> cb()
+            <span class="hljs-keyword">if</span> doc
+              alreadyUrls.push doc.feed.link
+              <span class="hljs-keyword">return</span> cb()
+            debug <span class="hljs-string">"Register:<span class="hljs-subst">#{candidate.url}</span>"</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Feed 作成</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>            Feed.create
+              <span class="hljs-attribute">url</span>:candidate.url
+              <span class="hljs-attribute">feed</span>:candidate
+            ,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>
+              <span class="hljs-keyword">if</span> err
+                app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+                <span class="hljs-keyword">return</span> cb()
+              app.get(<span class="hljs-string">'crowler'</span>).addToSet doc
+              urls.push doc.feed.link
+              <span class="hljs-keyword">return</span> cb()
+        ,<span class="hljs-function">-&gt;</span>
+          callback <span class="hljs-literal">null</span>,
+            <span class="hljs-attribute">added</span>:urls
+            <span class="hljs-attribute">alreadyAdded</span>:alreadyUrls</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>POST /api/feed/subscribe
+@param feed</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">subscribe</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+    feed = JSON.parse req.body.feed
+
+    <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> feed <span class="hljs-keyword">or</span> _.isEmpty feed</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>既にある場合は弾く</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Feed.findOne <span class="hljs-attribute">url</span>:feed.url,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>
+      <span class="hljs-keyword">if</span> err
+        app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+      <span class="hljs-keyword">if</span> doc
+        <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">400</span>).send(<span class="hljs-string">"already subscribed"</span>)</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Feed 作成</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      Feed.create
+        <span class="hljs-attribute">url</span>:feed.url
+        <span class="hljs-attribute">feed</span>:feed
+      ,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>
+        <span class="hljs-keyword">if</span> err
+          app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+          <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+        <span class="hljs-keyword">if</span> doc
+          app.get(<span class="hljs-string">'crowler'</span>).addToSet doc
+          res.send <span class="hljs-number">200</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

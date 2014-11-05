@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Gruntfile.coffee</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>Gruntfile.coffee</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-string">'use strict'</span>
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(grunt)</span> -&gt;</span>
+
+  _ = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
+  <span class="hljs-built_in">require</span> <span class="hljs-string">'coffee-errors'</span>
+
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-docco-dir'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-watch'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-coffee'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-coffeelint'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-clean'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-copy'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-mocha-test'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-istanbul'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-notify'</span>
+
+  grunt.registerTask <span class="hljs-string">'test'</span>,     [ <span class="hljs-string">'coffeelint'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'mochaTest:spec'</span> ]
+  grunt.registerTask <span class="hljs-string">'coverage'</span>, [ <span class="hljs-string">'clean'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'copy'</span>, <span class="hljs-string">'instrument'</span>, <span class="hljs-string">'mochaTest:coverage'</span>, <span class="hljs-string">'storeCoverage'</span>, <span class="hljs-string">'makeReport'</span>]
+  grunt.registerTask <span class="hljs-string">'travis'</span>,   [ <span class="hljs-string">'coverage'</span>]
+  grunt.registerTask <span class="hljs-string">'default'</span>,  [ <span class="hljs-string">'test'</span>, <span class="hljs-string">'watch'</span> ]
+
+  grunt.initConfig
+
+    <span class="hljs-attribute">coffeelint</span>:
+      <span class="hljs-attribute">options</span>:
+        <span class="hljs-attribute">max_line_length</span>:
+          <span class="hljs-attribute">value</span>: <span class="hljs-number">130</span>
+        <span class="hljs-attribute">indentation</span>:
+          <span class="hljs-attribute">value</span>: <span class="hljs-number">2</span>
+        <span class="hljs-attribute">newlines_after_classes</span>:
+          <span class="hljs-attribute">level</span>: <span class="hljs-string">'error'</span>
+        <span class="hljs-attribute">no_empty_param_list</span>:
+          <span class="hljs-attribute">level</span>: <span class="hljs-string">'error'</span>
+        <span class="hljs-attribute">no_unnecessary_fat_arrows</span>:
+          <span class="hljs-attribute">level</span>: <span class="hljs-string">'ignore'</span>
+      <span class="hljs-attribute">dist</span>:
+        <span class="hljs-attribute">files</span>: [
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'test/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'./'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'models/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'**/*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'config/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'**/*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'crowler/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'**/*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'events/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'**/*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'routes/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'**/*.coffee'</span> ] }
+          { <span class="hljs-attribute">expand</span>: <span class="hljs-literal">yes</span>, <span class="hljs-attribute">cwd</span>: <span class="hljs-string">'assets/'</span>, <span class="hljs-attribute">src</span>: [ <span class="hljs-string">'**/*.coffee'</span> ] }
+        ]
+
+    <span class="hljs-attribute">watch</span>:
+      <span class="hljs-attribute">options</span>:
+        <span class="hljs-attribute">interrupt</span>: <span class="hljs-literal">yes</span>
+      <span class="hljs-attribute">dist</span>:
+        <span class="hljs-attribute">files</span>: [
+          <span class="hljs-string">'*.coffee'</span>
+          <span class="hljs-string">'models/**/*.coffee'</span>
+          <span class="hljs-string">'events/**/*.coffee'</span>
+          <span class="hljs-string">'config/**/*.coffee'</span>
+          <span class="hljs-string">'routes/**/*.coffee'</span>
+          <span class="hljs-string">'crowler/**/*.coffee'</span>
+          <span class="hljs-string">'views/**/*.jade'</span>
+          <span class="hljs-string">'assets/**//*.coffee'</span>
+          <span class="hljs-string">'test/**/*.coffee'</span>
+        ]
+        <span class="hljs-attribute">tasks</span>: [ <span class="hljs-string">'clean:docco'</span>,<span class="hljs-string">'docco'</span>,<span class="hljs-string">'coffeelint'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'mochaTest:spec'</span> ]
+
+    <span class="hljs-attribute">coffee</span>:
+      <span class="hljs-attribute">clientjs</span>:
+        <span class="hljs-attribute">expand</span>:<span class="hljs-literal">true</span>
+        <span class="hljs-attribute">cwd</span>:<span class="hljs-string">'assets/coffee'</span>
+        <span class="hljs-attribute">src</span>:<span class="hljs-string">'*.coffee'</span>
+        <span class="hljs-attribute">dest</span>:<span class="hljs-string">'public/js/'</span>
+        <span class="hljs-attribute">ext</span>:<span class="hljs-string">'.js'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>@todo ビルド</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-attribute">build</span>:
+        <span class="hljs-attribute">expand</span>:<span class="hljs-literal">true</span>
+        <span class="hljs-attribute">cwd</span>:<span class="hljs-string">''</span>
+        <span class="hljs-attribute">src</span>:<span class="hljs-string">'server.coffee'</span>
+        <span class="hljs-attribute">dest</span>:<span class="hljs-string">'build/'</span>
+        <span class="hljs-attribute">ext</span>:<span class="hljs-string">'.js'</span>
+
+    <span class="hljs-attribute">copy</span>:
+      <span class="hljs-attribute">coverage</span>:
+        <span class="hljs-attribute">files</span>: [
+          <span class="hljs-attribute">expand</span>: <span class="hljs-literal">true</span>
+          <span class="hljs-attribute">src</span>: [<span class="hljs-string">'test/*'</span>]
+          <span class="hljs-attribute">dest</span>: <span class="hljs-string">'coverage/instrument/'</span>
+        ]
+
+    <span class="hljs-attribute">clean</span>:
+      <span class="hljs-attribute">coverage</span>:
+        <span class="hljs-attribute">src</span>: [<span class="hljs-string">'coverage/'</span>]
+      <span class="hljs-attribute">build</span>:
+        <span class="hljs-attribute">src</span>: [<span class="hljs-string">'build/'</span>]
+      <span class="hljs-attribute">docco</span>:
+        <span class="hljs-attribute">src</span>: [<span class="hljs-string">"public/docs/"</span>]</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Doc</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">docco</span>:
+      <span class="hljs-attribute">debug</span>:
+        <span class="hljs-attribute">src</span>: [
+          <span class="hljs-string">'*.coffee'</span>
+          <span class="hljs-string">'models/**/*.coffee'</span>
+          <span class="hljs-string">'events/**/*.coffee'</span>
+          <span class="hljs-string">'config/**/*.coffee'</span>
+          <span class="hljs-string">'routes/**/*.coffee'</span>
+          <span class="hljs-string">'crowler/**/*.coffee'</span>
+          <span class="hljs-string">'assets/**/*.coffee'</span>
+          <span class="hljs-string">'test/**/*.coffee'</span>
+        ]
+        <span class="hljs-attribute">options</span>:
+          <span class="hljs-attribute">output</span>: <span class="hljs-string">'public/docs/'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Istanbul(MochaTest+Coverage Report)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-attribute">instrument</span>:
+      <span class="hljs-attribute">files</span>: <span class="hljs-string">"build/*.js"</span>
+      <span class="hljs-attribute">options</span>:
+        <span class="hljs-attribute">lazy</span>: <span class="hljs-literal">true</span>
+        <span class="hljs-attribute">basePath</span>: <span class="hljs-string">"coverage/instrument/"</span>
+
+    <span class="hljs-attribute">mochaTest</span>:
+      <span class="hljs-attribute">spec</span>:
+        <span class="hljs-attribute">options</span>:
+          <span class="hljs-attribute">reporter</span>:<span class="hljs-string">"spec"</span>
+          <span class="hljs-attribute">timeout</span>: <span class="hljs-number">50000</span>
+          <span class="hljs-attribute">colors</span>: <span class="hljs-literal">true</span>
+        <span class="hljs-attribute">src</span>: [<span class="hljs-string">'test/**/*.coffee'</span>]
+      <span class="hljs-attribute">coverage</span>:
+        <span class="hljs-attribute">options</span>:
+          <span class="hljs-attribute">reporter</span>:<span class="hljs-string">"spec"</span>
+          <span class="hljs-attribute">timeout</span>: <span class="hljs-number">50000</span>
+          <span class="hljs-attribute">colors</span>:<span class="hljs-literal">true</span>
+        <span class="hljs-attribute">src</span>: [<span class="hljs-string">'coverage/instrument/test/*.coffee'</span>]
+
+    <span class="hljs-attribute">storeCoverage</span>:
+      <span class="hljs-attribute">options</span>:
+        <span class="hljs-attribute">dir</span>: <span class="hljs-string">"coverage/reports"</span>
+
+    <span class="hljs-attribute">makeReport</span>:
+      <span class="hljs-attribute">src</span>: <span class="hljs-string">"coverage/reports/**/*.json"</span>
+      <span class="hljs-attribute">options</span>:
+        <span class="hljs-attribute">type</span>: <span class="hljs-string">"lcov"</span>
+        <span class="hljs-attribute">dir</span>: <span class="hljs-string">"coverage/reports"</span>
+        <span class="hljs-attribute">print</span>: <span class="hljs-string">"detail"</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
