@@ -53,6 +53,7 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
 _     = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
 request = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span>
 domain = <span class="hljs-built_in">require</span> <span class="hljs-string">'domain'</span>
+random = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose-random'</span>
 
 debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'stdin/models/page'</span>)
 
@@ -62,7 +63,8 @@ PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
   <span class="hljs-attribute">article</span>:     { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed }
   <span class="hljs-attribute">body</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
   <span class="hljs-attribute">keywords</span>:    { <span class="hljs-attribute">type</span>: [String], <span class="hljs-attribute">default</span>:[] }
-  <span class="hljs-attribute">content</span>:     { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }</pre></div></div>
+  <span class="hljs-attribute">content</span>:     { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
+PageSchema.plugin random,{<span class="hljs-attribute">path</span>:<span class="hljs-string">"r"</span>}</pre></div></div>
             
         </li>
         

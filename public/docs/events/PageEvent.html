@@ -48,25 +48,7 @@ request = <span class="hljs-built_in">require</span> <span class="hljs-string">'
 async = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
 
 <span class="hljs-built_in">module</span>.exports.PageEvent = <span class="hljs-function"><span class="hljs-params">(app)</span> -&gt;</span>
-  Page        = app.get(<span class="hljs-string">"models"</span>).Page
-
-  <span class="hljs-attribute">getLatestPages</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
-
-    limit = req.query.limit <span class="hljs-keyword">or</span> <span class="hljs-number">100</span>
-
-    Page.find({}).populate(<span class="hljs-string">'feed'</span>).sort(<span class="hljs-string">'article.pubDate'</span>:-<span class="hljs-number">1</span>).limit(limit).exec (err,pages)-&gt;
-      <span class="hljs-keyword">if</span> err
-        app.emit <span class="hljs-string">'error'</span>, err
-        <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
-
-      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pages <span class="hljs-keyword">or</span> _.isEmpty pages
-
-      <span class="hljs-keyword">return</span> res.json pages
-
-  <span class="hljs-attribute">getSimilarPages</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
-
-    id = req.params.id
-    <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> id</pre></div></div>
+  Page        = app.get(<span class="hljs-string">"models"</span>).Page</pre></div></div>
             
         </li>
         
@@ -76,6 +58,112 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>GET /api/page/list</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">getPageList</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Options
+実行順</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    options = req.query
+    options.random ||= <span class="hljs-literal">false</span> <span class="hljs-comment"># ランダムに出す</span>
+    options.populateFeed ||= <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
+    options.sortByPubDate ||= <span class="hljs-literal">true</span> <span class="hljs-comment"># PubDateでソートする</span>
+    options.limit ||= <span class="hljs-number">100</span> <span class="hljs-comment"># Limit:件数制限</span>
+
+    promise = Page
+    promise = promise.find() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> options.random
+    promise = promise.findRandom() <span class="hljs-keyword">if</span> options.random
+    promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
+    promise = promise.sort(<span class="hljs-string">'article.pubDate'</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
+    promise = promise.limit(options.limit)
+    promise = promise.exec (err,pages)-&gt;
+      <span class="hljs-keyword">if</span> err
+        app.emit <span class="hljs-string">'error'</span>, err
+        <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pages <span class="hljs-keyword">or</span> _.isEmpty pages
+      <span class="hljs-keyword">return</span> res.json pages</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>GET /api/page/stream
+追加される度に流していくhttpStream
+@todo 実装</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">getPageStream</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Options</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    options = req.query
+    res.send []</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>GET /api/page/latest</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">getLatestPages</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+
+    req.query.random = <span class="hljs-literal">false</span>
+    req.query.sortByPubDate = <span class="hljs-literal">true</span>
+    <span class="hljs-property">@getPageList</span> req,res,next <span class="hljs-comment"># @note リダイレクトのほうがいい？</span>
+
+
+  <span class="hljs-attribute">getSimilarPages</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+
+    id = req.params.id
+    <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> id</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>@todo 実装</p>
 

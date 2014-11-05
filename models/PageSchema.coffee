@@ -14,6 +14,7 @@ async = require 'async'
 _     = require 'underscore'
 request = require 'request'
 domain = require 'domain'
+random = require 'mongoose-random'
 
 debug = require('debug')('stdin/models/page')
 
@@ -24,6 +25,7 @@ PageSchema = new Mongo.Schema
   body:        { type: String, default:"" }
   keywords:    { type: [String], default:[] }
   content:     { type: String, default:"" }
+PageSchema.plugin random,{path:"r"}
 
 # Validations
 PageSchema.path('link').validate (link)->

@@ -80,6 +80,7 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
       watcher = <span class="hljs-keyword">new</span> Watcher(feed.url)
       watcher.set
         <span class="hljs-attribute">interval</span>:<span class="hljs-number">60</span>*<span class="hljs-number">3</span> <span class="hljs-comment"># @todo frequency moduleがオカシイ</span>
+      watcher.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err
       watcher.<span class="hljs-literal">on</span> <span class="hljs-string">'new article'</span>,<span class="hljs-function"><span class="hljs-params">(article)</span>=&gt;</span></pre></div></div>
             
         </li>
