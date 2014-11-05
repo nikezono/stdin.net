@@ -33,8 +33,9 @@ exports = module.exports = (app)->
       watcher.on 'error',(err)-> return app.emit 'error',err
       watcher.on 'new article',(article)=>
         # あれば追加しない
-        Page.findOne link:article.link,=>
-          return debug "Already Registerd Link Is Published.#{article.link}"
+        Page.findOne link:article.link,(err,doc)=>
+          return app.emit 'error',err if err
+          return debug "Already Registerd Link Is Published.#{article.link}" if doc
           debug "New Article. #{article.link}"
           Page.upsertOneWithFeed article,feed,(err,page)=>
             return app.emit 'error', err if err

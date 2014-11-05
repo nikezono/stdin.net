@@ -96,8 +96,9 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        Page.findOne <span class="hljs-attribute">link</span>:article.link,<span class="hljs-function">=&gt;</span>
-          <span class="hljs-keyword">return</span> debug <span class="hljs-string">"Already Registerd Link Is Published.<span class="hljs-subst">#{article.link}</span>"</span>
+            <div class="content"><div class='highlight'><pre>        Page.findOne <span class="hljs-attribute">link</span>:article.link,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>=&gt;</span>
+          <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+          <span class="hljs-keyword">return</span> debug <span class="hljs-string">"Already Registerd Link Is Published.<span class="hljs-subst">#{article.link}</span>"</span> <span class="hljs-keyword">if</span> doc
           debug <span class="hljs-string">"New Article. <span class="hljs-subst">#{article.link}</span>"</span>
           Page.upsertOneWithFeed article,feed,<span class="hljs-function"><span class="hljs-params">(err,page)</span>=&gt;</span>
             <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>, err <span class="hljs-keyword">if</span> err</pre></div></div>
