@@ -119,6 +119,9 @@ module.exports = (grunt) ->
       app:
         src:"events/"
         dest:"public/apidocs/"
+      options:
+        marked:
+          gfm: true
 
     # Istanbul(MochaTest+Coverage Report)
     instrument:
