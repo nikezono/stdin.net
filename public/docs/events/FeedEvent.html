@@ -69,7 +69,7 @@ finder.setOptions
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">findFeed</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">findFeed</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>=&gt;</span>
     url = req.query.url</pre></div></div>
             
         </li>
@@ -87,7 +87,7 @@ finder.setOptions
             
             <div class="content"><div class='highlight'><pre>    Feed.findOne
       <span class="hljs-attribute">url</span>:url
-    ,<span class="hljs-function"><span class="hljs-params">(err,feed)</span>-&gt;</span>
+    ,<span class="hljs-function"><span class="hljs-params">(err,feed)</span>=&gt;</span>
       app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
       <span class="hljs-keyword">return</span> res.json feed <span class="hljs-keyword">if</span> feed
 

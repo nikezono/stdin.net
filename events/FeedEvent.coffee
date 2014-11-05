@@ -19,12 +19,12 @@ module.exports.FeedEvent = (app) ->
 
   # GET /api/feed/find
   # @param url
-  findFeed: (req,res,next)->
+  findFeed: (req,res,next)=>
     url = req.query.url
     # Feedが既にあればドキュメントを返す
     Feed.findOne
       url:url
-    ,(err,feed)->
+    ,(err,feed)=>
       app.emit 'error',err if err
       return res.json feed if feed
 
