@@ -30,6 +30,7 @@ exports = module.exports = (app)->
       watcher = new Watcher(feed.url)
       watcher.set
         interval:60*3 # @todo frequency moduleがオカシイ
+      watcher.on 'error',(err)-> return app.emit 'error',err
       watcher.on 'new article',(article)=>
         # あれば追加しない
         Page.findOne link:article.link,=>
