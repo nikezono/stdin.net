@@ -80,16 +80,16 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
             </div>
             
             <div class="content"><div class='highlight'><pre>    options = req.query
-    options.random ||= <span class="hljs-literal">false</span> <span class="hljs-comment"># ランダムに出す</span>
-    options.populateFeed ||= <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
-    options.sortByPubDate ||= <span class="hljs-literal">true</span> <span class="hljs-comment"># PubDateでソートする</span>
+    options.random = <span class="hljs-keyword">if</span> options.random <span class="hljs-keyword">is</span> <span class="hljs-string">'true'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">false</span> <span class="hljs-comment"># ランダムに出す</span>
+    options.populateFeed =  <span class="hljs-keyword">if</span> options.populateFeed <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
+    options.sortByPubDate =  <span class="hljs-keyword">if</span> options.sortByPubDate <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># PubDateでソートする</span>
     options.limit ||= <span class="hljs-number">100</span> <span class="hljs-comment"># Limit:件数制限</span>
 
     promise = Page
     promise = promise.find() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> options.random
     promise = promise.findRandom() <span class="hljs-keyword">if</span> options.random
-    promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
     promise = promise.sort(<span class="hljs-string">'article.pubDate'</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
+    promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
     promise = promise.limit(options.limit)
     promise = promise.exec (err,pages)-&gt;
       <span class="hljs-keyword">if</span> err

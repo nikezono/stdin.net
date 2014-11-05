@@ -63,8 +63,7 @@ PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
   <span class="hljs-attribute">article</span>:     { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed }
   <span class="hljs-attribute">body</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
   <span class="hljs-attribute">keywords</span>:    { <span class="hljs-attribute">type</span>: [String], <span class="hljs-attribute">default</span>:[] }
-  <span class="hljs-attribute">content</span>:     { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
-PageSchema.plugin random,{<span class="hljs-attribute">path</span>:<span class="hljs-string">"r"</span>}</pre></div></div>
+  <span class="hljs-attribute">content</span>:     { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }</pre></div></div>
             
         </li>
         
@@ -74,6 +73,21 @@ PageSchema.plugin random,{<span class="hljs-attribute">path</span>:<span class="
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Plugins</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>PageSchema.plugin(random, { <span class="hljs-attribute">path</span>: <span class="hljs-string">'r'</span> })</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>Validations</p>
 
@@ -86,32 +100,18 @@ PageSchema.plugin random,{<span class="hljs-attribute">path</span>:<span class="
         </li>
         
         
-        <li id="section-4">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>Middleware</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>PageSchema.post <span class="hljs-string">'save'</span>,<span class="hljs-function"><span class="hljs-params">(doc)</span>-&gt;</span>
-  debug <span class="hljs-string">"Saved: <span class="hljs-subst">#{doc.link}</span>"</span>
-  analyzeQueue.push doc</pre></div></div>
-            
-        </li>
-        
-        
         <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
-              <p>Model Methods</p>
+              <p>Middleware</p>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>PageSchema.post <span class="hljs-string">'save'</span>,<span class="hljs-function"><span class="hljs-params">(doc)</span>-&gt;</span>
+  debug <span class="hljs-string">"Saved: <span class="hljs-subst">#{doc.link}</span>"</span></pre></div></div>
             
         </li>
         
@@ -121,6 +121,19 @@ PageSchema.plugin random,{<span class="hljs-attribute">path</span>:<span class="
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Model Methods</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>upsertの代わり:findAndUpdateだとmiddlewareが発火しない為分けた</p>
 
@@ -136,22 +149,10 @@ PageSchema.plugin random,{<span class="hljs-attribute">path</span>:<span class="
       <span class="hljs-attribute">feed</span>:feed._id
     ,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>
       <span class="hljs-keyword">return</span> callback err,<span class="hljs-literal">null</span> <span class="hljs-keyword">if</span> err
+      analyzeQueue.push doc
       <span class="hljs-keyword">return</span> callback <span class="hljs-literal">null</span>,doc
 
 exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-7">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
-              </div>
-              <p>Utility</p>
-
-            </div>
             
         </li>
         
@@ -161,6 +162,19 @@ exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema<
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Utility</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>本文を取得し、特徴語を抽出するキュー</p>
 
@@ -173,11 +187,11 @@ exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema<
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>ここでのエラーはイベントだけ吐いて飲み込む</p>
 
@@ -200,11 +214,11 @@ exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema<
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>@todo キーワード抽出</p>
 

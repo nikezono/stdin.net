@@ -32,15 +32,20 @@ app.on "error",(err)->
 process.on 'uncaughtException',(err)->
   debug err
 
-### start socket.io and http server ###
+# 初期化処理
 server = http.createServer app
+app.get('models').Page.syncRandom (err,result)->
+  return app.emit err if err
+  return debug "SyncRandom done"
 
-### start rss crowler ###
+## クローラ起動
+
+# RSSクローラ
 crowler = require(path.resolve 'crowler','feed') app
 crowler.initialize()
 app.set 'crowler',crowler
 
-### start hatena-hotentry crowler ###
+# はてなクローラ
 hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry')
 hatenaCrowler(app)
 recursiveCrowl = ->

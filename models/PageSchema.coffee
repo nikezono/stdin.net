@@ -25,7 +25,9 @@ PageSchema = new Mongo.Schema
   body:        { type: String, default:"" }
   keywords:    { type: [String], default:[] }
   content:     { type: String, default:"" }
-PageSchema.plugin random,{path:"r"}
+
+# Plugins
+PageSchema.plugin(random, { path: 'r' })
 
 # Validations
 PageSchema.path('link').validate (link)->
@@ -35,7 +37,6 @@ PageSchema.path('link').validate (link)->
 # Middleware
 PageSchema.post 'save',(doc)->
   debug "Saved: #{doc.link}"
-  analyzeQueue.push doc
 
 # Model Methods
 
@@ -50,6 +51,7 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
       feed:feed._id
     ,(err,doc)->
       return callback err,null if err
+      analyzeQueue.push doc
       return callback null,doc
 
 exports.Page = Mongo.model 'pages', PageSchema

@@ -15,6 +15,13 @@
       }).error(function(err) {
         return callback(err, null);
       });
+    },
+    getPageList: function(options, callback) {
+      return $.getJSON("/api/page/list", options).success(function(data) {
+        return callback(null, data);
+      }).error(function(err) {
+        return callback(err, null);
+      });
     }
   };
 

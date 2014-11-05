@@ -126,11 +126,14 @@ process.<span class="hljs-literal">on</span> <span class="hljs-string">'uncaught
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <h2 id="start-socket-io-and-http-server">start socket.io and http server</h2>
+              <p>初期化処理</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>server = http.createServer app</pre></div></div>
+            <div class="content"><div class='highlight'><pre>server = http.createServer app
+app.get(<span class="hljs-string">'models'</span>).Page.syncRandom (err,result)-&gt;
+  <span class="hljs-keyword">return</span> app.emit err <span class="hljs-keyword">if</span> err
+  <span class="hljs-keyword">return</span> debug <span class="hljs-string">"SyncRandom done"</span></pre></div></div>
             
         </li>
         
@@ -141,13 +144,9 @@ process.<span class="hljs-literal">on</span> <span class="hljs-string">'uncaught
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
-              <h2 id="start-rss-crowler">start rss crowler</h2>
+              <h1 id="-">クローラ起動</h1>
 
             </div>
-            
-            <div class="content"><div class='highlight'><pre>crowler = <span class="hljs-built_in">require</span>(path.resolve <span class="hljs-string">'crowler'</span>,<span class="hljs-string">'feed'</span>) app
-crowler.initialize()
-app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
             
         </li>
         
@@ -158,7 +157,24 @@ app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <h2 id="start-hatena-hotentry-crowler">start hatena-hotentry crowler</h2>
+              <p>RSSクローラ</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>crowler = <span class="hljs-built_in">require</span>(path.resolve <span class="hljs-string">'crowler'</span>,<span class="hljs-string">'feed'</span>) app
+crowler.initialize()
+app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>はてなクローラ</p>
 
             </div>
             

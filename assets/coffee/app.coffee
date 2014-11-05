@@ -27,13 +27,27 @@ $ ->
         console.error err
         notify.danger "Initialize Error.Please Reload."
         return callback() if callback
+      refreshModel data,callback
 
-      newArticles = []
-      for article in data
-        newArticles.push new Article(article)
-      articles.reset newArticles
-      notify.success "Refreshed"
-      return callback() if callback
+  refreshRandom = (callback)->
+    httpApi.getPageList
+      limit:50
+      random:true
+      sortByPubDate:false
+    ,(err,data)->
+      if err
+        console.error err
+        notify.danger "Initialize Error.Please Reload."
+        return callback() if callback
+      refreshModel data,callback
+
+  refreshModel = (data,callback)->
+    newArticles = []
+    for article in data
+      newArticles.push new Article(article)
+    articles.reset newArticles
+    notify.success "Refreshed"
+    return callback() if callback
 
   ## Marionette ##
   App = new Backbone.Marionette.Application()
@@ -50,23 +64,32 @@ $ ->
       App.start()
 
   ## Navigation Event @note backboneに落としこむ
+  animateFlag = true
+  animate = ($dom)->
+    $dom.animate
+      zIndex: 1
+    ,
+      duration: 500
+      step: (now) ->
+        return $dom.css transform: "rotate(" + (now * 360) + "deg)"
+      complete: ->
+        $dom.css('zIndex', 0)
+        animate($dom) if animateFlag
 
   # Refresh button
   $('#Refresh').click ->
     animateFlag = true
-    animate = ->
-      $("#Refresh").animate
-        zIndex: 1
-      ,
-        duration: 500
-        step: (now) ->
-          return $(this).css transform: "rotate(" + (now * 360) + "deg)"
-        complete: ->
-          $("#Refresh").css('zIndex', 0)
-          animate() if animateFlag
-    animate()
+    animate($('#Refresh'))
     refresh ->
       animateFlag = false
+
+  # Random button
+  $('#Random').click ->
+    animateFlag = true
+    animate($('#Random'))
+    refreshRandom ->
+      animateFlag = false
+
 
   # Find Button
   $('button#Find').click ->

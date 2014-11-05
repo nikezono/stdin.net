@@ -8,7 +8,7 @@
   $(function() {
 
     /* Configration & Initialize */
-    var App, articles, articlesView, httpApi, path, refresh;
+    var App, animate, animateFlag, articles, articlesView, httpApi, path, refresh, refreshModel, refreshRandom;
     _.templateSettings = {
       interpolate: /\{\{(.+?)\}\}/g
     };
@@ -20,7 +20,6 @@
     });
     refresh = function(callback) {
       return httpApi.getLatestArticles(function(err, data) {
-        var article, newArticles, _i, _len;
         if (err) {
           console.error(err);
           notify.danger("Initialize Error.Please Reload.");
@@ -28,17 +27,37 @@
             return callback();
           }
         }
-        newArticles = [];
-        for (_i = 0, _len = data.length; _i < _len; _i++) {
-          article = data[_i];
-          newArticles.push(new Article(article));
-        }
-        articles.reset(newArticles);
-        notify.success("Refreshed");
-        if (callback) {
-          return callback();
-        }
+        return refreshModel(data, callback);
       });
+    };
+    refreshRandom = function(callback) {
+      return httpApi.getPageList({
+        limit: 50,
+        random: true,
+        sortByPubDate: false
+      }, function(err, data) {
+        if (err) {
+          console.error(err);
+          notify.danger("Initialize Error.Please Reload.");
+          if (callback) {
+            return callback();
+          }
+        }
+        return refreshModel(data, callback);
+      });
+    };
+    refreshModel = function(data, callback) {
+      var article, newArticles, _i, _len;
+      newArticles = [];
+      for (_i = 0, _len = data.length; _i < _len; _i++) {
+        article = data[_i];
+        newArticles.push(new Article(article));
+      }
+      articles.reset(newArticles);
+      notify.success("Refreshed");
+      if (callback) {
+        return callback();
+      }
     };
     App = new Backbone.Marionette.Application();
     App.addRegions({
@@ -53,29 +72,36 @@
         return App.start();
       });
     });
-    $('#Refresh').click(function() {
-      var animate, animateFlag;
-      animateFlag = true;
-      animate = function() {
-        return $("#Refresh").animate({
-          zIndex: 1
-        }, {
-          duration: 500,
-          step: function(now) {
-            return $(this).css({
-              transform: "rotate(" + (now * 360) + "deg)"
-            });
-          },
-          complete: function() {
-            $("#Refresh").css('zIndex', 0);
-            if (animateFlag) {
-              return animate();
-            }
+    animateFlag = true;
+    animate = function($dom) {
+      return $dom.animate({
+        zIndex: 1
+      }, {
+        duration: 500,
+        step: function(now) {
+          return $dom.css({
+            transform: "rotate(" + (now * 360) + "deg)"
+          });
+        },
+        complete: function() {
+          $dom.css('zIndex', 0);
+          if (animateFlag) {
+            return animate($dom);
           }
-        });
-      };
-      animate();
+        }
+      });
+    };
+    $('#Refresh').click(function() {
+      animateFlag = true;
+      animate($('#Refresh'));
       return refresh(function() {
+        return animateFlag = false;
+      });
+    });
+    $('#Random').click(function() {
+      animateFlag = true;
+      animate($('#Random'));
+      return refreshRandom(function() {
         return animateFlag = false;
       });
     });

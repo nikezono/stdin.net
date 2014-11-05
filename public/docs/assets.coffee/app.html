@@ -101,13 +101,27 @@ $ -&gt;</pre></div></div>
         <span class="hljs-built_in">console</span>.error err
         notify.danger <span class="hljs-string">"Initialize Error.Please Reload."</span>
         <span class="hljs-keyword">return</span> callback() <span class="hljs-keyword">if</span> callback
-
-      newArticles = []
-      <span class="hljs-keyword">for</span> article <span class="hljs-keyword">in</span> data
-        newArticles.push <span class="hljs-keyword">new</span> Article(article)
-      articles.reset newArticles
-      notify.success <span class="hljs-string">"Refreshed"</span>
-      <span class="hljs-keyword">return</span> callback() <span class="hljs-keyword">if</span> callback</pre></div></div>
+      refreshModel data,callback
+<span class="hljs-function">
+  <span class="hljs-title">refreshRandom</span> = <span class="hljs-params">(callback)</span>-&gt;</span>
+    httpApi.getPageList
+      <span class="hljs-attribute">limit</span>:<span class="hljs-number">50</span>
+      <span class="hljs-attribute">random</span>:<span class="hljs-literal">true</span>
+      <span class="hljs-attribute">sortByPubDate</span>:<span class="hljs-literal">false</span>
+    ,<span class="hljs-function"><span class="hljs-params">(err,data)</span>-&gt;</span>
+      <span class="hljs-keyword">if</span> err
+        <span class="hljs-built_in">console</span>.error err
+        notify.danger <span class="hljs-string">"Initialize Error.Please Reload."</span>
+        <span class="hljs-keyword">return</span> callback() <span class="hljs-keyword">if</span> callback
+      refreshModel data,callback
+<span class="hljs-function">
+  <span class="hljs-title">refreshModel</span> = <span class="hljs-params">(data,callback)</span>-&gt;</span>
+    newArticles = []
+    <span class="hljs-keyword">for</span> article <span class="hljs-keyword">in</span> data
+      newArticles.push <span class="hljs-keyword">new</span> Article(article)
+    articles.reset newArticles
+    notify.success <span class="hljs-string">"Refreshed"</span>
+    <span class="hljs-keyword">return</span> callback() <span class="hljs-keyword">if</span> callback</pre></div></div>
             
         </li>
         
@@ -160,6 +174,18 @@ $ -&gt;</pre></div></div>
 
             </div>
             
+            <div class="content"><div class='highlight'><pre>  animateFlag = <span class="hljs-literal">true</span>
+<span class="hljs-function">  <span class="hljs-title">animate</span> = <span class="hljs-params">($dom)</span>-&gt;</span>
+    $dom.animate
+      <span class="hljs-attribute">zIndex</span>: <span class="hljs-number">1</span>
+    ,
+      <span class="hljs-attribute">duration</span>: <span class="hljs-number">500</span>
+      <span class="hljs-attribute">step</span>: <span class="hljs-function"><span class="hljs-params">(now)</span> -&gt;</span>
+        <span class="hljs-keyword">return</span> $dom.css <span class="hljs-attribute">transform</span>: <span class="hljs-string">"rotate("</span> + (now * <span class="hljs-number">360</span>) + <span class="hljs-string">"deg)"</span>
+      <span class="hljs-attribute">complete</span>: <span class="hljs-function">-&gt;</span>
+        $dom.css(<span class="hljs-string">'zIndex'</span>, <span class="hljs-number">0</span>)
+        animate($dom) <span class="hljs-keyword">if</span> animateFlag</pre></div></div>
+            
         </li>
         
         
@@ -175,17 +201,7 @@ $ -&gt;</pre></div></div>
             
             <div class="content"><div class='highlight'><pre>  $(<span class="hljs-string">'#Refresh'</span>).click -&gt;
     animateFlag = <span class="hljs-literal">true</span>
-<span class="hljs-function">    <span class="hljs-title">animate</span> = -&gt;</span>
-      $(<span class="hljs-string">"#Refresh"</span>).animate
-        <span class="hljs-attribute">zIndex</span>: <span class="hljs-number">1</span>
-      ,
-        <span class="hljs-attribute">duration</span>: <span class="hljs-number">500</span>
-        <span class="hljs-attribute">step</span>: <span class="hljs-function"><span class="hljs-params">(now)</span> -&gt;</span>
-          <span class="hljs-keyword">return</span> $(<span class="hljs-keyword">this</span>).css <span class="hljs-attribute">transform</span>: <span class="hljs-string">"rotate("</span> + (now * <span class="hljs-number">360</span>) + <span class="hljs-string">"deg)"</span>
-        <span class="hljs-attribute">complete</span>: <span class="hljs-function">-&gt;</span>
-          $(<span class="hljs-string">"#Refresh"</span>).css(<span class="hljs-string">'zIndex'</span>, <span class="hljs-number">0</span>)
-          animate() <span class="hljs-keyword">if</span> animateFlag
-    animate()
+    animate($(<span class="hljs-string">'#Refresh'</span>))
     refresh -&gt;
       animateFlag = <span class="hljs-literal">false</span></pre></div></div>
             
@@ -197,6 +213,25 @@ $ -&gt;</pre></div></div>
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Random button</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  $(<span class="hljs-string">'#Random'</span>).click -&gt;
+    animateFlag = <span class="hljs-literal">true</span>
+    animate($(<span class="hljs-string">'#Random'</span>))
+    refreshRandom -&gt;
+      animateFlag = <span class="hljs-literal">false</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>Find Button</p>
 

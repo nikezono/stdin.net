@@ -18,16 +18,16 @@ module.exports.PageEvent = (app) ->
     # Options
     # 実行順
     options = req.query
-    options.random ||= false # ランダムに出す
-    options.populateFeed ||= true # Feedの情報を取得する
-    options.sortByPubDate ||= true # PubDateでソートする
+    options.random = if options.random is 'true' then true else  false # ランダムに出す
+    options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
+    options.sortByPubDate =  if options.sortByPubDate is 'false' then false else  true # PubDateでソートする
     options.limit ||= 100 # Limit:件数制限
 
     promise = Page
     promise = promise.find() if not options.random
     promise = promise.findRandom() if options.random
-    promise = promise.populate('feed') if options.populateFeed
     promise = promise.sort('article.pubDate':-1) if options.sortByPubDate
+    promise = promise.populate('feed') if options.populateFeed
     promise = promise.limit(options.limit)
     promise = promise.exec (err,pages)->
       if err

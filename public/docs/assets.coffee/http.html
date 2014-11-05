@@ -75,6 +75,26 @@
             
         </li>
         
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>オプション付き</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">getPageList</span>:<span class="hljs-function"><span class="hljs-params">(options,callback)</span>-&gt;</span>
+    $.getJSON <span class="hljs-string">"/api/page/list"</span>,options
+    .success (data)-&gt;
+      callback <span class="hljs-literal">null</span>,data
+    .error (err)-&gt;
+      callback err,<span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
     </ul>
   </div>
 </body>
