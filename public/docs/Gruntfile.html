@@ -35,17 +35,73 @@
 <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(grunt)</span> -&gt;</span>
 
   _ = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
-  <span class="hljs-built_in">require</span> <span class="hljs-string">'coffee-errors'</span>
+  <span class="hljs-built_in">require</span> <span class="hljs-string">'coffee-errors'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>ユーティリティ系</p>
 
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-docco-dir'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-watch'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-coffee'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-coffeelint'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-clean'</span>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-clean'</span>
   grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-copy'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-mocha-test'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-istanbul'</span>
-  grunt.loadNpmTasks <span class="hljs-string">'grunt-notify'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-watch'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-notify'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>ドキュメント系</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  grunt.loadNpmTasks <span class="hljs-string">'grunt-apidoc'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-docco-dir'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>テスト系</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  grunt.loadNpmTasks <span class="hljs-string">'grunt-contrib-coffee'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-coffeelint'</span>
+  grunt.loadNpmTasks <span class="hljs-string">'grunt-mocha-test'</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>カバレッジ系</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  grunt.loadNpmTasks <span class="hljs-string">'grunt-istanbul'</span>
 
   grunt.registerTask <span class="hljs-string">'test'</span>,     [ <span class="hljs-string">'coffeelint'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'mochaTest:spec'</span> ]
   grunt.registerTask <span class="hljs-string">'coverage'</span>, [ <span class="hljs-string">'clean'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'copy'</span>, <span class="hljs-string">'instrument'</span>, <span class="hljs-string">'mochaTest:coverage'</span>, <span class="hljs-string">'storeCoverage'</span>, <span class="hljs-string">'makeReport'</span>]
@@ -93,7 +149,7 @@
           <span class="hljs-string">'assets/**//*.coffee'</span>
           <span class="hljs-string">'test/**/*.coffee'</span>
         ]
-        <span class="hljs-attribute">tasks</span>: [ <span class="hljs-string">'clean:docco'</span>,<span class="hljs-string">'docco'</span>,<span class="hljs-string">'coffeelint'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'mochaTest:spec'</span> ]
+        <span class="hljs-attribute">tasks</span>: [ <span class="hljs-string">'clean:docs'</span>,<span class="hljs-string">'docco'</span>,<span class="hljs-string">'apidoc'</span>,<span class="hljs-string">'coffeelint'</span>,<span class="hljs-string">'coffee'</span>,<span class="hljs-string">'mochaTest:spec'</span> ]
 
     <span class="hljs-attribute">coffee</span>:
       <span class="hljs-attribute">clientjs</span>:
@@ -106,11 +162,11 @@
         </li>
         
         
-        <li id="section-2">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-2">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>@todo ビルド</p>
 
@@ -136,17 +192,17 @@
         <span class="hljs-attribute">src</span>: [<span class="hljs-string">'coverage/'</span>]
       <span class="hljs-attribute">build</span>:
         <span class="hljs-attribute">src</span>: [<span class="hljs-string">'build/'</span>]
-      <span class="hljs-attribute">docco</span>:
-        <span class="hljs-attribute">src</span>: [<span class="hljs-string">"public/docs/"</span>]</pre></div></div>
+      <span class="hljs-attribute">docs</span>:
+        <span class="hljs-attribute">src</span>:[<span class="hljs-string">"public/docs/"</span>,<span class="hljs-string">"public/apidocs"</span>]</pre></div></div>
             
         </li>
         
         
-        <li id="section-3">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Doc</p>
 
@@ -165,16 +221,21 @@
           <span class="hljs-string">'test/**/*.coffee'</span>
         ]
         <span class="hljs-attribute">options</span>:
-          <span class="hljs-attribute">output</span>: <span class="hljs-string">'public/docs/'</span></pre></div></div>
+          <span class="hljs-attribute">output</span>: <span class="hljs-string">'public/docs/'</span>
+
+    <span class="hljs-attribute">apidoc</span>:
+      <span class="hljs-attribute">app</span>:
+        <span class="hljs-attribute">src</span>:<span class="hljs-string">"events/"</span>
+        <span class="hljs-attribute">dest</span>:<span class="hljs-string">"public/apidocs/"</span></pre></div></div>
             
         </li>
         
         
-        <li id="section-4">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Istanbul(MochaTest+Coverage Report)</p>
 

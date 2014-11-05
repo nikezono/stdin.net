@@ -12,7 +12,44 @@ async = require 'async'
 module.exports.PageEvent = (app) ->
   Page        = app.get("models").Page
 
-  # GET /api/page/list
+  ###
+
+  @api {GET}  /api/page/list ページリストの取得
+  @apiVersion 0.1.0
+  @apiName 記事リスト取得
+  @apiDescription ページリストの一覧を取得します。
+
+    `sortByPubDate`と`random`を両方とも`true`にすることは出来ません。
+    その場合、`sortByPubDate`が優先されます。
+
+    また、`keywords`,`body`,`content`パラメータについては、データが入力されていない場合があります。
+
+  @apiParam {Number} limit 取得する件数(default=100)
+  @apiParam {Boolean} populateFeed 配信元フィードの情報を含める(default=true)
+  @apiParam {Boolean} sortByPubDate 更新日時逆順でソート(default=true)
+  @apiParam {Boolean} random 無作為に記事を抽出する(default=false)
+
+  @apiSuccess {JSONArray} json 成功時コールバック
+  @apiSuccessExample {json} Success-Response:
+    [
+      {
+        _id: "ObjectId("54512b79e959d9d2bdc6f50b")" // MongoDBのObjectId(Unique)
+        link: "http://www.ping.pong/article/1.html" // 記事へのPermalink
+        article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }
+        feed:{
+          url: "http://www.ping.pong/feed.xml" // RSS/AtomフィードのURL
+          feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
+        // 以下,記事生成後にジョブキューにより生成
+        keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
+        body: "<html><body><p>hoge</p></body></html>" // URLの参照先全文
+        content: "hoge" // 本文抽出されたテキスト
+      }
+    ,...]
+
+  @apiError PageNotFound(404) 当該ページが存在しないとき
+  @apiError InternalServerError(500) MongoDBへのクエリ実行が例外をthrowしたとき
+
+  ###
   getPageList: (req,res,next)->
 
     # Options

@@ -5,15 +5,20 @@ module.exports = (grunt) ->
   _ = require 'underscore'
   require 'coffee-errors'
 
-  grunt.loadNpmTasks 'grunt-docco-dir'
-  grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-contrib-coffee'
-  grunt.loadNpmTasks 'grunt-coffeelint'
+  # ユーティリティ系
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-mocha-test'
-  grunt.loadNpmTasks 'grunt-istanbul'
+  grunt.loadNpmTasks 'grunt-contrib-watch'
   grunt.loadNpmTasks 'grunt-notify'
+  # ドキュメント系
+  grunt.loadNpmTasks 'grunt-apidoc'
+  grunt.loadNpmTasks 'grunt-docco-dir'
+  # テスト系
+  grunt.loadNpmTasks 'grunt-contrib-coffee'
+  grunt.loadNpmTasks 'grunt-coffeelint'
+  grunt.loadNpmTasks 'grunt-mocha-test'
+  # カバレッジ系
+  grunt.loadNpmTasks 'grunt-istanbul'
 
   grunt.registerTask 'test',     [ 'coffeelint','coffee','mochaTest:spec' ]
   grunt.registerTask 'coverage', [ 'clean','coffee','copy', 'instrument', 'mochaTest:coverage', 'storeCoverage', 'makeReport']
@@ -61,7 +66,7 @@ module.exports = (grunt) ->
           'assets/**//*.coffee'
           'test/**/*.coffee'
         ]
-        tasks: [ 'clean:docco','docco','coffeelint','coffee','mochaTest:spec' ]
+        tasks: [ 'clean:docs','docco','apidoc','coffeelint','coffee','mochaTest:spec' ]
 
     coffee:
       clientjs:
@@ -91,8 +96,8 @@ module.exports = (grunt) ->
         src: ['coverage/']
       build:
         src: ['build/']
-      docco:
-        src: ["public/docs/"]
+      docs:
+        src:["public/docs/","public/apidocs"]
 
     # Doc
     docco:
@@ -109,6 +114,11 @@ module.exports = (grunt) ->
         ]
         options:
           output: 'public/docs/'
+
+    apidoc:
+      app:
+        src:"events/"
+        dest:"public/apidocs/"
 
     # Istanbul(MochaTest+Coverage Report)
     instrument:
