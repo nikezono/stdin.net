@@ -95,8 +95,7 @@ debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'de
 ) <span class="hljs-keyword">or</span> fs.existsSync(<span class="hljs-string">'./newrelic.js'</span>)
 
 <span class="hljs-built_in">console</span>.log <span class="hljs-string">"using newrelic:<span class="hljs-subst">#{newrelicEnable}</span>"</span>
-<span class="hljs-keyword">if</span> newrelicEnable
-  <span class="hljs-built_in">require</span> <span class="hljs-string">'newrelic'</span></pre></div></div>
+newrelic = <span class="hljs-built_in">require</span> <span class="hljs-string">'newrelic'</span> <span class="hljs-keyword">if</span> newrelicEnable</pre></div></div>
             
         </li>
         
@@ -112,10 +111,13 @@ debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'de
             </div>
             
             <div class="content"><div class='highlight'><pre>app.<span class="hljs-literal">on</span> <span class="hljs-string">"error"</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+  newrelic.noticeError err <span class="hljs-keyword">if</span> newrelicEnable
   debug err
 
 process.<span class="hljs-literal">on</span> <span class="hljs-string">'uncaughtException'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
-  debug err</pre></div></div>
+  newrelic.noticeError err <span class="hljs-keyword">if</span> newrelicEnable
+  debug err
+  process.exit <span class="hljs-number">1</span></pre></div></div>
             
         </li>
         

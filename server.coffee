@@ -22,15 +22,17 @@ newrelicEnable = (
 ) or fs.existsSync('./newrelic.js')
 
 console.log "using newrelic:#{newrelicEnable}"
-if newrelicEnable
-  require 'newrelic'
+newrelic = require 'newrelic' if newrelicEnable
 
 # @todo エラー処理はNewRelicに投げる
 app.on "error",(err)->
+  newrelic.noticeError err if newrelicEnable
   debug err
 
 process.on 'uncaughtException',(err)->
+  newrelic.noticeError err if newrelicEnable
   debug err
+  process.exit 1
 
 # 初期化処理
 server = http.createServer app
