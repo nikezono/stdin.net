@@ -5,7 +5,7 @@ define({ api: [
     "title": "ページリストの取得",
     "version": "0.1.0",
     "name": "記事リスト取得",
-    "description": "<p>ページリストの一覧を取得します。</p><p>   <code>sortByPubDate</code>と<code>random</code>を両方とも<code>true</code>にすることは出来ません。   その場合、<code>sortByPubDate</code>が優先されます。</p><p>   また、<code>keywords</code>,<code>body</code>,<code>content</code>パラメータについては、データが入力されていない場合があります。</p>",
+    "description": "<p>ページリストの一覧を取得します。</p><p>   <code>sortByPubDate</code>と<code>random</code>を両方とも<code>true</code>にすることは出来ません。   その場合、<code>sortByPubDate</code>が優先されます。</p><p>   また、<code>keywords</code>,<code>body</code>,<code>content</code>パラメータについては、データが入力されていない場合があります。</p><p>   Sample: <a href=\"http://www.stdin.net/api/page/list?limit=1&amp;random=true&amp;sortByPubDate=false\">http://www.stdin.net/api/page/list?limit=1&amp;random=true&amp;sortByPubDate=false</a></p>",
     "parameter": {
       "fields": {
         "Parameter": [

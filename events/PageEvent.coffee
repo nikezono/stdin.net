@@ -24,6 +24,8 @@ module.exports.PageEvent = (app) ->
 
     また、`keywords`,`body`,`content`パラメータについては、データが入力されていない場合があります。
 
+    Sample: http://www.stdin.net/api/page/list?limit=1&random=true&sortByPubDate=false
+
   @apiParam {Number} limit 取得する件数(default=100)
   @apiParam {Boolean} populateFeed 配信元フィードの情報を含める(default=true)
   @apiParam {Boolean} sortByPubDate 更新日時逆順でソート(default=true)
