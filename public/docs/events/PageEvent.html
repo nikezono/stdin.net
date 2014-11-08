@@ -235,7 +235,7 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
     promise = Page
     promise = promise.find() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> options.random
     promise = promise.findRandom() <span class="hljs-keyword">if</span> options.random
-    promise = promise.sort(<span class="hljs-attribute">pubDate</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
+    promise = promise.find(<span class="hljs-attribute">pubDate</span>:<span class="hljs-string">"$lte"</span>:<span class="hljs-keyword">new</span> Date()).sort(<span class="hljs-attribute">pubDate</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
     promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
     promise = promise.limit(options.limit)
     index = <span class="hljs-number">0</span>
