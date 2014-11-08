@@ -1,6 +1,74 @@
 [
   {
     "type": "GET",
+    "url": " /api/page/:id",
+    "title": "ページの取得",
+    "version": "0.1.0",
+    "name": "記事オブジェクト取得",
+    "description": "<p>特定のページを取得します。</p><p>   指定されたページのオブジェクトを一件だけ取得するAPIです。</p><p>   ランダムなページや、最新のページを1件だけ取得する場合は、   <code>/api/page/list</code> APIを、<code>limit=1</code> などの指定で使用してください。</p><p>   Sample: <a href=\"http://www.stdin.net/api/page/54518505e0b813906fbffeaf\">http://www.stdin.net/api/page/54518505e0b813906fbffeaf</a></p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Id",
+            "field": "id",
+            "optional": false,
+            "description": "<p>取得するページのObject Id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "field": "populateFeed",
+            "optional": false,
+            "description": "<p>配信元フィードの情報を含める(default=true)</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "JSONObject",
+            "field": "json",
+            "optional": false,
+            "description": "<p>成功時コールバック</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Success-Response:",
+          "content": "  {\n    _id: \"ObjectId(\"54512b79e959d9d2bdc6f50b\")\" // MongoDBのObjectId(Unique)\n    link: \"http://www.ping.pong/article/1.html\" // 記事へのPermalink\n    article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }\n    feed:{\n      url: \"http://www.ping.pong/feed.xml\" // RSS/AtomフィードのURL\n      feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }\n    // 以下,記事生成後にジョブキューにより生成\n    keywords: {\"ping\":10,\"pong\":2,\"bang\":5} // 本文中の頻出語\n    body: \"<html><body><p>hoge</p></body></html>\" // URLの参照先全文\n    content: \"hoge\" // 本文抽出されたテキスト\n  }\n",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "field": "PageNotFound",
+            "optional": false,
+            "description": "<p>(404) 当該ページが存在しないとき</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "field": "InternalServerError",
+            "optional": false,
+            "description": "<p>(500) MongoDBへのクエリ実行が例外をthrowしたとき</p>"
+          }
+        ]
+      }
+    },
+    "group": "PageEvent_coffee",
+    "filename": "events/PageEvent.coffee"
+  },
+  {
+    "type": "GET",
     "url": " /api/page/list",
     "title": "ページリストの取得",
     "version": "0.1.0",

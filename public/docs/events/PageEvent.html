@@ -64,6 +64,98 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
             </div>
             
             <div class="content"><div class='highlight'><pre>
+  <span class="hljs-property">@api</span> {GET}  <span class="hljs-regexp">/api/page/</span>:id ページの取得
+  <span class="hljs-property">@apiVersion</span> <span class="hljs-number">0.1</span><span class="hljs-number">.0</span>
+  <span class="hljs-property">@apiName</span> 記事オブジェクト取得
+  <span class="hljs-property">@apiDescription</span> 特定のページを取得します。
+
+    指定されたページのオブジェクトを一件だけ取得するAPIです。
+
+    ランダムなページや、最新のページを<span class="hljs-number">1</span>件だけ取得する場合は、
+    `<span class="javascript">/api/page/list</span>` APIを、`<span class="javascript">limit=<span class="hljs-number">1</span></span>` などの指定で使用してください。
+
+    <span class="hljs-attribute">Sample</span>: <span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>www.stdin.net/api/page/<span class="hljs-number">54518505e0</span>b813906fbffeaf
+
+  <span class="hljs-property">@apiParam</span> {Id} id 取得するページのObject Id
+  <span class="hljs-property">@apiParam</span> {Boolean} populateFeed 配信元フィードの情報を含める(<span class="hljs-reserved">default</span>=<span class="hljs-literal">true</span>)
+
+  <span class="hljs-property">@apiSuccess</span> {JSONObject} json 成功時コールバック
+  <span class="hljs-property">@apiSuccessExample</span> {json} Success-<span class="hljs-attribute">Response</span>:
+    {
+      <span class="hljs-attribute">_id</span>: <span class="hljs-string">"ObjectId("</span><span class="hljs-number">54512</span>b79e959d9d2bdc6f50b<span class="hljs-string">")"</span> <span class="hljs-regexp">//</span> MongoDBのObjectId(Unique)
+      <span class="hljs-attribute">link</span>: <span class="hljs-string">"http://www.ping.pong/article/1.html"</span> <span class="hljs-regexp">//</span> 記事へのPermalink
+      <span class="hljs-attribute">article</span>: { <span class="hljs-attribute">https</span>:<span class="hljs-regexp">//gi</span>thub.com/danmactough/node-feedparser<span class="hljs-comment">#list-of-article-properties }</span>
+      <span class="hljs-attribute">feed</span>:{
+        <span class="hljs-attribute">url</span>: <span class="hljs-string">"http://www.ping.pong/feed.xml"</span> <span class="hljs-regexp">//</span> RSS/AtomフィードのURL
+        <span class="hljs-attribute">feed</span>: { <span class="hljs-attribute">https</span>:<span class="hljs-regexp">//gi</span>thub.com/danmactough/node-feedparser<span class="hljs-comment">#list-of-meta-properties }</span>
+      <span class="hljs-regexp">//</span> 以下,記事生成後にジョブキューにより生成
+      <span class="hljs-attribute">keywords</span>: {<span class="hljs-string">"ping"</span>:<span class="hljs-number">10</span>,<span class="hljs-string">"pong"</span>:<span class="hljs-number">2</span>,<span class="hljs-string">"bang"</span>:<span class="hljs-number">5</span>} <span class="hljs-regexp">//</span> 本文中の頻出語
+      <span class="hljs-attribute">body</span>: <span class="hljs-string">"&lt;html&gt;&lt;body&gt;&lt;p&gt;hoge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"</span> <span class="hljs-regexp">//</span> URLの参照先全文
+      <span class="hljs-attribute">content</span>: <span class="hljs-string">"hoge"</span> <span class="hljs-regexp">//</span> 本文抽出されたテキスト
+    }
+
+  <span class="hljs-property">@apiError</span> PageNotFound(<span class="hljs-number">404</span>) 当該ページが存在しないとき
+  <span class="hljs-property">@apiError</span> InternalServerError(<span class="hljs-number">500</span>) MongoDBへのクエリ実行が例外を<span class="hljs-keyword">throw</span>したとき</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+  <span class="hljs-attribute">getPageWithId</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+
+    <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> req.params.id <span class="hljs-keyword">or</span> req.params.id <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Options
+実行順</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    options = req.query
+    options.populateFeed =  <span class="hljs-keyword">if</span> options.populateFeed <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
+
+    promise = Page
+    promise = promise.findOne(<span class="hljs-attribute">_id</span>:req.params.id)
+    promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
+    promise = promise.exec (err,page)-&gt;
+      <span class="hljs-keyword">if</span> err
+        app.emit <span class="hljs-string">'error'</span>, err
+        <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> page <span class="hljs-keyword">or</span> _.isEmpty page
+      <span class="hljs-keyword">return</span> res.json page</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
   <span class="hljs-property">@api</span> {GET}  /api/page/list ページリストの取得
   <span class="hljs-property">@apiVersion</span> <span class="hljs-number">0.1</span><span class="hljs-number">.0</span>
   <span class="hljs-property">@apiName</span> 記事リスト取得
@@ -104,11 +196,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         </li>
         
         
-        <li id="section-4">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <h1 id="-">#</h1>
 
@@ -119,11 +211,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         </li>
         
         
-        <li id="section-5">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Options
 実行順</p>
@@ -152,11 +244,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         </li>
         
         
-        <li id="section-6">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>GET /api/page/stream
 追加される度に流していくhttpStream
@@ -169,11 +261,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         </li>
         
         
-        <li id="section-7">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Options</p>
 
@@ -185,11 +277,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         </li>
         
         
-        <li id="section-8">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>GET /api/page/latest</p>
 
@@ -210,11 +302,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         </li>
         
         
-        <li id="section-9">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>@todo 実装</p>
 

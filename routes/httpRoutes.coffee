@@ -24,6 +24,7 @@ module.exports = (app) ->
   app.get  '/api/page/stream',     (req,res,next)-> PageEvent.getPageStream req,res,next
   app.get  '/api/page/latest',     (req,res,next)-> PageEvent.getLatestPages req,res,next
   app.get  '/api/page/:id/similar',(req,res,next)-> PageEvent.getSimilarPages req,res,next
+  app.get  '/api/page/:id',        (req,res,next)-> PageEvent.getPageWithId req,res,next
 
   # 404 Not Found
   app.get  '/*',           (req,res,next)-> res.send 404

@@ -14,6 +14,62 @@ module.exports.PageEvent = (app) ->
 
   ###
 
+  @api {GET}  /api/page/:id ページの取得
+  @apiVersion 0.1.0
+  @apiName 記事オブジェクト取得
+  @apiDescription 特定のページを取得します。
+
+    指定されたページのオブジェクトを一件だけ取得するAPIです。
+
+    ランダムなページや、最新のページを1件だけ取得する場合は、
+    `/api/page/list` APIを、`limit=1` などの指定で使用してください。
+
+    Sample: http://www.stdin.net/api/page/54518505e0b813906fbffeaf
+
+  @apiParam {Id} id 取得するページのObject Id
+  @apiParam {Boolean} populateFeed 配信元フィードの情報を含める(default=true)
+
+  @apiSuccess {JSONObject} json 成功時コールバック
+  @apiSuccessExample {json} Success-Response:
+    {
+      _id: "ObjectId("54512b79e959d9d2bdc6f50b")" // MongoDBのObjectId(Unique)
+      link: "http://www.ping.pong/article/1.html" // 記事へのPermalink
+      article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }
+      feed:{
+        url: "http://www.ping.pong/feed.xml" // RSS/AtomフィードのURL
+        feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
+      // 以下,記事生成後にジョブキューにより生成
+      keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
+      body: "<html><body><p>hoge</p></body></html>" // URLの参照先全文
+      content: "hoge" // 本文抽出されたテキスト
+    }
+
+  @apiError PageNotFound(404) 当該ページが存在しないとき
+  @apiError InternalServerError(500) MongoDBへのクエリ実行が例外をthrowしたとき
+
+  ###
+
+  getPageWithId: (req,res,next)->
+
+    return res.send 400 if not req.params.id or req.params.id is null
+
+    # Options
+    # 実行順
+    options = req.query
+    options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
+
+    promise = Page
+    promise = promise.findOne(_id:req.params.id)
+    promise = promise.populate('feed') if options.populateFeed
+    promise = promise.exec (err,page)->
+      if err
+        app.emit 'error', err
+        return res.send 500
+      return res.send 404 if not page or _.isEmpty page
+      return res.json page
+
+  ###
+
   @api {GET}  /api/page/list ページリストの取得
   @apiVersion 0.1.0
   @apiName 記事リスト取得
