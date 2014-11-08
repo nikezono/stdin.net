@@ -45,6 +45,8 @@
 debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">"debug"</span>)(<span class="hljs-string">"stdin/events/page"</span>)
 _     = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
 request = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span>
+JSONStream = <span class="hljs-built_in">require</span> <span class="hljs-string">'JSONStream'</span>
+ObjectId = <span class="hljs-built_in">require</span>(<span class="hljs-string">'mongoose'</span>).Types.ObjectId
 async = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
 
 <span class="hljs-built_in">module</span>.exports.PageEvent = <span class="hljs-function"><span class="hljs-params">(app)</span> -&gt;</span>
@@ -133,14 +135,16 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
     options.populateFeed =  <span class="hljs-keyword">if</span> options.populateFeed <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
 
     promise = Page
-    promise = promise.findOne(<span class="hljs-attribute">_id</span>:req.params.id)
+    promise = promise.findOne(<span class="hljs-attribute">_id</span>:<span class="hljs-keyword">new</span> ObjectId(req.params.id))
     promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
-    promise = promise.exec (err,page)-&gt;
-      <span class="hljs-keyword">if</span> err
-        app.emit <span class="hljs-string">'error'</span>, err
-        <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
-      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> page <span class="hljs-keyword">or</span> _.isEmpty page
-      <span class="hljs-keyword">return</span> res.json page</pre></div></div>
+    promise = promise.stream()
+    .<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      app.emit <span class="hljs-string">'error'</span>,err
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+    .<span class="hljs-literal">on</span> <span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-params">(doc)</span>-&gt;</span>
+      <span class="hljs-keyword">return</span> res.json doc
+    .<span class="hljs-literal">on</span> <span class="hljs-string">'close'</span>,<span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span></pre></div></div>
             
         </li>
         
@@ -226,20 +230,29 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
     options.random = <span class="hljs-keyword">if</span> options.random <span class="hljs-keyword">is</span> <span class="hljs-string">'true'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">true</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">false</span> <span class="hljs-comment"># ランダムに出す</span>
     options.populateFeed =  <span class="hljs-keyword">if</span> options.populateFeed <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
     options.sortByPubDate =  <span class="hljs-keyword">if</span> options.sortByPubDate <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># PubDateでソートする</span>
-    options.limit ||= <span class="hljs-number">100</span> <span class="hljs-comment"># Limit:件数制限</span>
+    options.limit = <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> isNaN(options.limit) <span class="hljs-keyword">then</span> options.limit <span class="hljs-keyword">else</span> <span class="hljs-number">100</span> <span class="hljs-comment"># Limit:件数制限</span>
 
     promise = Page
     promise = promise.find() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> options.random
     promise = promise.findRandom() <span class="hljs-keyword">if</span> options.random
-    promise = promise.find(<span class="hljs-string">'article.pubDate'</span>:<span class="hljs-string">"$lte"</span>:<span class="hljs-keyword">new</span> Date()).sort(<span class="hljs-string">'article.pubDate'</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
+    promise = promise.sort(<span class="hljs-attribute">pubDate</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
     promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
     promise = promise.limit(options.limit)
-    promise = promise.exec (err,pages)-&gt;
-      <span class="hljs-keyword">if</span> err
-        app.emit <span class="hljs-string">'error'</span>, err
-        <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
-      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> pages <span class="hljs-keyword">or</span> _.isEmpty pages
-      <span class="hljs-keyword">return</span> res.json pages</pre></div></div>
+    index = <span class="hljs-number">0</span>
+    promise = promise.stream()
+    .<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
+      app.emit <span class="hljs-string">'error'</span>,err
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+    .<span class="hljs-literal">on</span> <span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-params">(doc)</span>-&gt;</span>
+      res.write <span class="hljs-string">"["</span> <span class="hljs-keyword">if</span> index <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+      res.write <span class="hljs-string">","</span> <span class="hljs-keyword">if</span> index &gt; <span class="hljs-number">0</span>
+      res.write JSON.stringify(doc)
+      index++
+    .<span class="hljs-literal">on</span> <span class="hljs-string">'close'</span>,<span class="hljs-function">-&gt;</span>
+      <span class="hljs-keyword">if</span> index &gt; <span class="hljs-number">0</span>
+        res.write <span class="hljs-string">"]"</span>
+        <span class="hljs-keyword">return</span> res.end()
+      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span></pre></div></div>
             
         </li>
         

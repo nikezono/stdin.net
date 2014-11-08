@@ -59,6 +59,7 @@ debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'de
 
 PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
   <span class="hljs-attribute">link</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">index</span>:{ <span class="hljs-attribute">unique</span>:<span class="hljs-literal">true</span> }, <span class="hljs-attribute">required</span>:<span class="hljs-literal">true</span> }
+  <span class="hljs-attribute">pubDate</span>:     { <span class="hljs-attribute">type</span>: Date, <span class="hljs-attribute">index</span>:<span class="hljs-literal">true</span> }
   <span class="hljs-attribute">feed</span>:        { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.ObjectId, <span class="hljs-attribute">ref</span>: <span class="hljs-string">'feeds'</span> }
   <span class="hljs-attribute">article</span>:     { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed }
   <span class="hljs-attribute">body</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
@@ -145,6 +146,7 @@ PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
     <span class="hljs-keyword">return</span> callback <span class="hljs-literal">null</span>,doc <span class="hljs-keyword">if</span> doc
     <span class="hljs-property">@create</span>
       <span class="hljs-attribute">link</span>: article.link
+      <span class="hljs-attribute">pubDate</span>: article.pubDate
       <span class="hljs-attribute">article</span>:article
       <span class="hljs-attribute">feed</span>:feed._id
     ,<span class="hljs-function"><span class="hljs-params">(err,doc)</span>-&gt;</span>

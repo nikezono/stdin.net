@@ -20,6 +20,7 @@ debug = require('debug')('stdin/models/page')
 
 PageSchema = new Mongo.Schema
   link:        { type: String, index:{ unique:true }, required:true }
+  pubDate:     { type: Date, index:true }
   feed:        { type: Mongo.Schema.Types.ObjectId, ref: 'feeds' }
   article:     { type: Mongo.Schema.Types.Mixed }
   body:        { type: String, default:"" }
@@ -47,6 +48,7 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
     return callback null,doc if doc
     @create
       link: article.link
+      pubDate: article.pubDate
       article:article
       feed:feed._id
     ,(err,doc)->

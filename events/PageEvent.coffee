@@ -7,6 +7,8 @@
 debug = require("debug")("stdin/events/page")
 _     = require 'underscore'
 request = require 'request'
+JSONStream = require 'JSONStream'
+ObjectId = require('mongoose').Types.ObjectId
 async = require 'async'
 
 module.exports.PageEvent = (app) ->
@@ -59,14 +61,16 @@ module.exports.PageEvent = (app) ->
     options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
 
     promise = Page
-    promise = promise.findOne(_id:req.params.id)
+    promise = promise.findOne(_id:new ObjectId(req.params.id))
     promise = promise.populate('feed') if options.populateFeed
-    promise = promise.exec (err,page)->
-      if err
-        app.emit 'error', err
-        return res.send 500
-      return res.send 404 if not page or _.isEmpty page
-      return res.json page
+    promise = promise.stream()
+    .on 'error', (err) ->
+      app.emit 'error',err
+      return res.send 500
+    .on 'data', (doc)->
+      return res.json doc
+    .on 'close',->
+      return res.send 404
 
   ###
 
@@ -116,20 +120,29 @@ module.exports.PageEvent = (app) ->
     options.random = if options.random is 'true' then true else  false # ランダムに出す
     options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
     options.sortByPubDate =  if options.sortByPubDate is 'false' then false else  true # PubDateでソートする
-    options.limit ||= 100 # Limit:件数制限
+    options.limit = if not isNaN(options.limit) then options.limit else 100 # Limit:件数制限
 
     promise = Page
     promise = promise.find() if not options.random
     promise = promise.findRandom() if options.random
-    promise = promise.find('article.pubDate':"$lte":new Date()).sort('article.pubDate':-1) if options.sortByPubDate
+    promise = promise.sort(pubDate:-1) if options.sortByPubDate
     promise = promise.populate('feed') if options.populateFeed
     promise = promise.limit(options.limit)
-    promise = promise.exec (err,pages)->
-      if err
-        app.emit 'error', err
-        return res.send 500
-      return res.send 404 if not pages or _.isEmpty pages
-      return res.json pages
+    index = 0
+    promise = promise.stream()
+    .on 'error', (err) ->
+      app.emit 'error',err
+      return res.send 500
+    .on 'data', (doc)->
+      res.write "[" if index is 0
+      res.write "," if index > 0
+      res.write JSON.stringify(doc)
+      index++
+    .on 'close',->
+      if index > 0
+        res.write "]"
+        return res.end()
+      return res.send 404
 
   # GET /api/page/stream
   # 追加される度に流していくhttpStream
