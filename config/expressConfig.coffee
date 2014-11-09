@@ -30,6 +30,8 @@ app = express()
 # env
 app.set 'env', process.env.NODE_ENV || 'development'
 app.set 'port', process.env.PORT || 3000
+app.set 'feed crawler queue', process.env.FEEDQUEUE || 2 # RSSクローラの並列処理可能数
+app.set 'hatena crawler queue', process.env.HATENAQUEUE || 2 # はてなクローラ(フィード探索)の並列処理可能数
 
 # views
 app.set "views", path.resolve "views"

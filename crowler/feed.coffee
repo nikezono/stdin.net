@@ -91,7 +91,7 @@ exports = module.exports = (app)->
           feed.update links:_.pluck(articles,'link'),(err)->
             return callback err if err
             return callback()
-  ,2
+  ,app.get('feed crawler queue')
 
   createWatcher: (feed,callback)->
     debug "New Watcher:#{feed.url}"
