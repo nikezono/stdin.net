@@ -10,10 +10,25 @@ domain = require('domain')
 _    = require 'underscore'
 async = require 'async'
 request = require 'request'
+
 DTimer = require('dtimer').DTimer
+
 redis = require('redis')
-pub = redis.createClient()
-sub = redis.createClient()
+url = require("url")
+
+if process.env.REDISCLOUD_URL
+  redisURL = url.parse(process.env.REDISCLOUD_URL)
+  client = redis.createClient(redisURL.port, redisURL.hostname,no_ready_check: true)
+  client.auth redisURL.auth.split(":")[1]
+  pub = redis.createClient(redisURL.port, redisURL.hostname,no_ready_check: true)
+  pub.auth redisURL.auth.split(":")[1]
+  sub = redis.createClient(redisURL.port, redisURL.hostname,no_ready_check: true)
+  sub.auth redisURL.auth.split(":")[1]
+
+else
+  client = redis.createClient()
+  pub = redis.createClient()
+  sub = redis.createClient()
 
 exports = module.exports = (app)->
 

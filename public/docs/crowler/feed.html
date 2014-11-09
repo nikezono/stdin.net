@@ -48,10 +48,25 @@ domain = <span class="hljs-built_in">require</span>(<span class="hljs-string">'d
 _    = <span class="hljs-built_in">require</span> <span class="hljs-string">'underscore'</span>
 async = <span class="hljs-built_in">require</span> <span class="hljs-string">'async'</span>
 request = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span>
+
 DTimer = <span class="hljs-built_in">require</span>(<span class="hljs-string">'dtimer'</span>).DTimer
+
 redis = <span class="hljs-built_in">require</span>(<span class="hljs-string">'redis'</span>)
-pub = redis.createClient()
-sub = redis.createClient()
+url = <span class="hljs-built_in">require</span>(<span class="hljs-string">"url"</span>)
+
+<span class="hljs-keyword">if</span> process.env.REDISCLOUD_URL
+  redisURL = url.parse(process.env.REDISCLOUD_URL)
+  client = redis.createClient(redisURL.port, redisURL.hostname,<span class="hljs-attribute">no_ready_check</span>: <span class="hljs-literal">true</span>)
+  client.auth redisURL.auth.split(<span class="hljs-string">":"</span>)[<span class="hljs-number">1</span>]
+  pub = redis.createClient(redisURL.port, redisURL.hostname,<span class="hljs-attribute">no_ready_check</span>: <span class="hljs-literal">true</span>)
+  pub.auth redisURL.auth.split(<span class="hljs-string">":"</span>)[<span class="hljs-number">1</span>]
+  sub = redis.createClient(redisURL.port, redisURL.hostname,<span class="hljs-attribute">no_ready_check</span>: <span class="hljs-literal">true</span>)
+  sub.auth redisURL.auth.split(<span class="hljs-string">":"</span>)[<span class="hljs-number">1</span>]
+
+<span class="hljs-keyword">else</span>
+  client = redis.createClient()
+  pub = redis.createClient()
+  sub = redis.createClient()
 
 exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(app)</span>-&gt;</span>
 
