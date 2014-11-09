@@ -248,8 +248,11 @@ finder.setOptions
           app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
           <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
         <span class="hljs-keyword">if</span> doc
-          app.get(<span class="hljs-string">'crowler'</span>).addToSet doc
-          res.send <span class="hljs-number">200</span></pre></div></div>
+          app.get(<span class="hljs-string">'crowler'</span>).createWatcher doc,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+            <span class="hljs-keyword">if</span> err
+              app.emit <span class="hljs-string">'error'</span>,err
+              <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
+            res.send <span class="hljs-number">200</span></pre></div></div>
             
         </li>
         

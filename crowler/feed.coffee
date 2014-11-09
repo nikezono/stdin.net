@@ -39,11 +39,6 @@ exports = module.exports = (app)->
   dt = new DTimer("stdin", pub, sub)
   dt.on 'error',(err)-> return app.emit 'error',err
 
-  # api
-  addToSet:(feed)->
-    @createWatcher.push feed, ->
-      debug "AddToSet Watcher #{feed.feed.title}"
-
   # Helper
   parseAndUpdate: async.queue (url,callback)->
 

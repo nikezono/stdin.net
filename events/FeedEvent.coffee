@@ -99,6 +99,9 @@ module.exports.FeedEvent = (app) ->
           app.emit 'error',err if err
           return res.send 500
         if doc
-          app.get('crowler').addToSet doc
-          res.send 200
+          app.get('crowler').createWatcher doc,(err)->
+            if err
+              app.emit 'error',err
+              return res.send 500
+            res.send 200
 
