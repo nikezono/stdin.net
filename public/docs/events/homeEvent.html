@@ -45,7 +45,8 @@
 <span class="hljs-built_in">module</span>.exports.HomeEvent = <span class="hljs-function"><span class="hljs-params">(app)</span> -&gt;</span>
 
   <span class="hljs-attribute">index</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
-    res.render <span class="hljs-string">"index"</span></pre></div></div>
+    res.render <span class="hljs-string">"index"</span>,
+      <span class="hljs-attribute">memoryUsage</span>:<span class="hljs-string">"<span class="hljs-subst">#{process.memoryUsage().rss/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>}</span>MB"</span></pre></div></div>
             
         </li>
         

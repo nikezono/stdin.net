@@ -32,7 +32,8 @@
 
   * url      [String] {Unique}  フィードのURL
   * pages    [ObjectId]         PageオブジェクトのArray
-  * feed     [Object]           Feedオブジェクト(FeedParser)</pre></div></div>
+  * feed     [Object]           Feedオブジェクト(FeedParser)
+  * links    [String]           現在PublishされているArticleのLink-Array</pre></div></div>
             
         </li>
         
@@ -54,6 +55,7 @@ FeedSchema = <span class="hljs-keyword">new</span> Mongo.Schema
   <span class="hljs-attribute">url</span>:   { <span class="hljs-attribute">type</span>: String,  <span class="hljs-attribute">index</span>: { <span class="hljs-attribute">unique</span>: <span class="hljs-literal">true</span> } }
   <span class="hljs-attribute">pages</span>: [{ <span class="hljs-attribute">type</span>: Mongo.Schema.Types.ObjectId, <span class="hljs-attribute">ref</span>: <span class="hljs-string">'pages'</span>, <span class="hljs-attribute">default</span>:[] }]
   <span class="hljs-attribute">feed</span>:  { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed }
+  <span class="hljs-attribute">links</span>: [ {<span class="hljs-attribute">type</span>:String, <span class="hljs-attribute">default</span>:[]} ]
 
 exports.Feed = Mongo.model <span class="hljs-string">'feeds'</span>, FeedSchema</pre></div></div>
             

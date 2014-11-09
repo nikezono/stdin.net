@@ -9,56 +9,121 @@ debug = require('debug')('stdin/crowler/feed')
 domain = require('domain')
 _    = require 'underscore'
 async = require 'async'
-Watcher = require 'rss-watcher'
 request = require 'request'
+DTimer = require('dtimer').DTimer
+redis = require('redis')
+pub = redis.createClient()
+sub = redis.createClient()
 
 exports = module.exports = (app)->
 
   Feed = app.get('models').Feed
   Page = app.get('models').Page
 
+  # タイマーを生成
+  dt = new DTimer("stdin", pub, sub)
+  dt.on 'error',(err)-> return app.emit 'error',err
+
   # api
   addToSet:(feed)->
-    @createWatcher(feed)
+    @createWatcher.push feed, ->
+      debug "AddToSet Watcher #{feed.feed.title}"
 
-  createWatcher : (feed)->
-    d = domain.create()
-    d.on 'error',(err)->
-      app.emit 'error',err
-    d.run =>
-      debug "New Watcher:#{feed.url}"
-      watcher = new Watcher(feed.url)
-      watcher.set
-        interval:60*3 # @todo frequency moduleがオカシイ
-      watcher.on 'error',(err)-> return app.emit 'error',err
-      watcher.on 'new article',(article)=>
-        # あれば追加しない
-        Page.findOne link:article.link,(err,doc)=>
-          return app.emit 'error',err if err
-          return debug "Already Registerd Link Is Published.#{article.link}" if doc
-          debug "New Article. #{article.link}"
-          Page.upsertOneWithFeed article,feed,(err,page)=>
-            return app.emit 'error', err if err
+  # Helper
+  parseAndUpdate: async.queue (url,callback)->
 
-            # 擬似Populate
+    debug "parseAndUpdate #{url}"
+
+    # Feed探索
+    Feed.findOne url:url,(err,feed)->
+      return callback err if err
+
+      # リクエスト/Parsing
+      req = request url
+      req.on 'error',(err)-> return callback err
+      req.on 'response',(res)->
+        return this.emit 'error', new Error('Bad status code') if res.statusCode isnt 200
+        stream = this
+        stream.pipe feedParser
+
+      articles = []
+      newArticles = []
+      feedParser = new (require('feedparser'))({addmeta:true})
+      feedParser.on 'error', (err)-> return app.emit 'error',err
+      feedParser.on 'readable', ->
+        stream = this
+
+        # 記事ごとに、新着かどうか判定
+        if article = stream.read()
+          articles.push article
+        else return
+
+        if not _.contains(feed.links,article.link)
+          debug "new Articles:#{article.link}"
+          newArticles.push article
+
+      feedParser.on 'end', ->
+        return callback() if articles.length is 0 or newArticles.length is 0
+
+        # ページオブジェクト更新
+        async.forEach newArticles,(article,cb)->
+          Page.upsertOneWithFeed article,feed,(err,page)->
+            if err
+              app.emit 'error',err
+              return cb()
             pageObject = page.toObject()
             page.feed = feed
             app.emit 'new article',
               page:page
+            return cb()
+        ,->
+          # ページリストをfeedに書き込み
+          feed.update links:_.pluck(articles,'link'),(err)->
+            return callback err if err
+            return callback()
+  ,2
 
-      watcher.run (err,articles)=>
+  createWatcher: (feed,callback)->
+    debug "New Watcher:#{feed.url}"
+    @parseAndUpdate.push feed.url,(err)=>
+      return callback err if err
+
+      debug "Initialize End:#{feed.url}"
+
+      # タイマーセット
+      dt.post {url:feed.url},1000*60*3,(err,evId)->
         return app.emit 'error', err if err
 
-        for article in articles
-          Page.upsertOneWithFeed article,feed,(err,page)=>
-            return app.emit 'error', err if err
-            app.emit 'new feed',
-              feed:feed
+      return callback()
 
   initialize : ->
+
+    @initializeTimer()
     Feed.find {}, (err,feeds)=>
       return debug err if err
       for feed in feeds
-        @createWatcher(feed)
+        @createWatcher feed,(err)->
+          return app.emit 'error',err if err
+          debug "Create Watcher #{feed.feed.title}"
+
+  initializeTimer: ->
+
+    # イベント時処理
+    dt.on 'event',(object)=>
+      url = object.url
+      debug "DTimer:#{url}"
+
+      # 取得/追加
+      @parseAndUpdate.push url,(err)->
+        return app.emit 'error',err if err
+
+        # 取得/計算終了時、タイマー起動
+        dt.post {url:url},1000*60*3,(err,evId)->
+          return app.emit 'error',err if err
+
+    # タイマー起動
+    dt.join (err)->
+      return throw Error("Cant Generate Redis Event Listener:#{err}") if err
+      debug "dtimer setup completed."
 
 

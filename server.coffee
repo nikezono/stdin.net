@@ -36,25 +36,24 @@ process.on 'uncaughtException',(err)->
 server = http.createServer app
 app.get('models').Page.syncRandom (err,result)->
   return app.emit err if err
-  return debug "SyncRandom done"
+  debug "SyncRandom done"
 
-## クローラ起動
+  ## クローラ起動
 
-# RSSクローラ
-crowler = require(path.resolve 'crowler','feed') app
-crowler.initialize()
-app.set 'crowler',crowler
+  # RSSクローラ
+  crowler = require(path.resolve 'crowler','feed') app
+  crowler.initialize()
+  app.set 'crowler',crowler
 
-# はてなクローラ
-hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry')
-hatenaCrowler(app)
-recursiveCrowl = ->
-  setTimeout ->
-    hatenaCrowler(app)
-    recursiveCrowl()
-  ,1000*60*60*1 # 1hour
+  # はてなクローラ
+  hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry')
+  hatenaCrowler(app)
+  recursiveCrowl = ->
+    setTimeout ->
+      hatenaCrowler(app)
+      recursiveCrowl()
+    ,1000*60*60*1 # 1hour
 
-
-server.listen app.get("port"), ->
-  debug "Express server listening on port " + app.get("port")
+  server.listen app.get("port"), ->
+    debug "Express server listening on port " + app.get("port")
 

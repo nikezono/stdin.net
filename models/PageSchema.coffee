@@ -56,6 +56,21 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
       analyzeQueue.push doc
       return callback null,doc
 
+
+# Create If Not Exists
+PageSchema.statics.createIfNotExists = (article,feed,callback)->
+  @findOne link:article.link,(err,doc)=>
+    if err
+      return callback err,null
+    if doc
+      debug "Already Registerd Link Is Published.#{article.link}"
+      return callback null,null
+
+    @upsertOneWithFeed article,feed,(err,page)->
+      return callback err,null if err
+      return callback null,page
+
+
 exports.Page = Mongo.model 'pages', PageSchema
 
 # Utility

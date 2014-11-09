@@ -121,7 +121,7 @@ process.<span class="hljs-literal">on</span> <span class="hljs-string">'uncaught
             <div class="content"><div class='highlight'><pre>server = http.createServer app
 app.get(<span class="hljs-string">'models'</span>).Page.syncRandom (err,result)-&gt;
   <span class="hljs-keyword">return</span> app.emit err <span class="hljs-keyword">if</span> err
-  <span class="hljs-keyword">return</span> debug <span class="hljs-string">"SyncRandom done"</span></pre></div></div>
+  debug <span class="hljs-string">"SyncRandom done"</span></pre></div></div>
             
         </li>
         
@@ -149,9 +149,9 @@ app.get(<span class="hljs-string">'models'</span>).Page.syncRandom (err,result)-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>crowler = <span class="hljs-built_in">require</span>(path.resolve <span class="hljs-string">'crowler'</span>,<span class="hljs-string">'feed'</span>) app
-crowler.initialize()
-app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  crowler = <span class="hljs-built_in">require</span>(path.resolve <span class="hljs-string">'crowler'</span>,<span class="hljs-string">'feed'</span>) app
+  crowler.initialize()
+  app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
             
         </li>
         
@@ -166,17 +166,16 @@ app.set <span class="hljs-string">'crowler'</span>,crowler</pre></div></div>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>hatenaCrowler = <span class="hljs-built_in">require</span>(path.resolve <span class="hljs-string">'crowler'</span>,<span class="hljs-string">'hatenaHotentry'</span>)
-hatenaCrowler(app)
-<span class="hljs-function"><span class="hljs-title">recursiveCrowl</span> = -&gt;</span>
-  setTimeout -&gt;
-    hatenaCrowler(app)
-    recursiveCrowl()
-  ,<span class="hljs-number">1000</span>*<span class="hljs-number">60</span>*<span class="hljs-number">60</span>*<span class="hljs-number">1</span> <span class="hljs-comment"># 1hour</span>
+            <div class="content"><div class='highlight'><pre>  hatenaCrowler = <span class="hljs-built_in">require</span>(path.resolve <span class="hljs-string">'crowler'</span>,<span class="hljs-string">'hatenaHotentry'</span>)
+  hatenaCrowler(app)
+<span class="hljs-function">  <span class="hljs-title">recursiveCrowl</span> = -&gt;</span>
+    setTimeout -&gt;
+      hatenaCrowler(app)
+      recursiveCrowl()
+    ,<span class="hljs-number">1000</span>*<span class="hljs-number">60</span>*<span class="hljs-number">60</span>*<span class="hljs-number">1</span> <span class="hljs-comment"># 1hour</span>
 
-
-server.listen app.get(<span class="hljs-string">"port"</span>), <span class="hljs-function">-&gt;</span>
-  debug <span class="hljs-string">"Express server listening on port "</span> + app.get(<span class="hljs-string">"port"</span>)</pre></div></div>
+  server.listen app.get(<span class="hljs-string">"port"</span>), <span class="hljs-function">-&gt;</span>
+    debug <span class="hljs-string">"Express server listening on port "</span> + app.get(<span class="hljs-string">"port"</span>)</pre></div></div>
             
         </li>
         
