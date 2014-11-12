@@ -101,5 +101,4 @@ analyzeQueue = async.queue (page,callback)->
       ,(err)->
         return app.emit 'error',err if err
         debug "Analyzed. #{page.link}"
-  ,app.get('analyze queue')
-
+  ,process.env.ANALYZEQUEUE || 2
