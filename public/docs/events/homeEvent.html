@@ -42,11 +42,17 @@
             </div>
             
             <div class="content"><div class='highlight'><pre>
+debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'stdin/events/home'</span>)
 <span class="hljs-built_in">module</span>.exports.HomeEvent = <span class="hljs-function"><span class="hljs-params">(app)</span> -&gt;</span>
 
   <span class="hljs-attribute">index</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+    hatenaCrowlerQueue = app.get <span class="hljs-string">'hatenaCrawlerQueue'</span>
+    feedCrowlerQueue = app.get <span class="hljs-string">'feedCrawlerQueue'</span>
+    debug feedCrowlerQueue
     res.render <span class="hljs-string">"index"</span>,
-      <span class="hljs-attribute">memoryUsage</span>:<span class="hljs-string">"<span class="hljs-subst">#{process.memoryUsage().rss/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>}</span>MB"</span></pre></div></div>
+      <span class="hljs-attribute">memoryUsage</span>:<span class="hljs-string">"<span class="hljs-subst">#{process.memoryUsage().rss/<span class="hljs-number">1024</span>/<span class="hljs-number">1024</span>}</span>MB"</span>
+      <span class="hljs-attribute">hatena</span>:hatenaCrowlerQueue?.length() || <span class="hljs-number">0</span>
+      <span class="hljs-attribute">feed</span>:feedCrowlerQueue?.length() || <span class="hljs-number">0</span></pre></div></div>
             
         </li>
         

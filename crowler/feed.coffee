@@ -39,8 +39,8 @@ exports = module.exports = (app)->
   dt = new DTimer("stdin", pub, sub)
   dt.on 'error',(err)-> return app.emit 'error',err
 
-  # Helper
-  parseAndUpdate: async.queue (url,callback)->
+
+  parseAndUpdate = async.queue (url,callback)->
 
     debug "parseAndUpdate #{url}"
 
@@ -92,6 +92,11 @@ exports = module.exports = (app)->
             return callback err if err
             return callback()
   ,app.get('feed crawler queue')
+
+  app.set 'feedCrawlerQueue', parseAndUpdate
+
+  # Helper
+  parseAndUpdate:parseAndUpdate
 
   createWatcher: (feed,callback)->
     debug "New Watcher:#{feed.url}"

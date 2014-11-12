@@ -87,7 +87,12 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
             </div>
             
             <div class="content"><div class='highlight'><pre>  dt = <span class="hljs-keyword">new</span> DTimer(<span class="hljs-string">"stdin"</span>, pub, sub)
-  dt.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err</pre></div></div>
+  dt.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err
+
+
+  parseAndUpdate = async.queue (url,callback)-&gt;
+
+    debug <span class="hljs-string">"parseAndUpdate <span class="hljs-subst">#{url}</span>"</span></pre></div></div>
             
         </li>
         
@@ -97,23 +102,6 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
               
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
-              </div>
-              <p>Helper</p>
-
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">parseAndUpdate</span>: async.queue (url,callback)-&gt;
-
-    debug <span class="hljs-string">"parseAndUpdate <span class="hljs-subst">#{url}</span>"</span></pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-5">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Feed探索</p>
 
@@ -125,11 +113,11 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
         </li>
         
         
-        <li id="section-6">
+        <li id="section-5">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>リクエスト/Parsing</p>
 
@@ -152,11 +140,11 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
         </li>
         
         
-        <li id="section-7">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>記事ごとに、新着かどうか判定</p>
 
@@ -176,11 +164,11 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
         </li>
         
         
-        <li id="section-8">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>ページオブジェクト更新</p>
 
@@ -201,11 +189,11 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
         </li>
         
         
-        <li id="section-9">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>ページリストをfeedに書き込み</p>
 
@@ -215,6 +203,23 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
             <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err
             <span class="hljs-keyword">return</span> callback()
   ,app.get(<span class="hljs-string">'feed crawler queue'</span>)
+
+  app.set <span class="hljs-string">'feedCrawlerQueue'</span>, parseAndUpdate</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Helper</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-attribute">parseAndUpdate</span>:parseAndUpdate
 
   <span class="hljs-attribute">createWatcher</span>: <span class="hljs-function"><span class="hljs-params">(feed,callback)</span>-&gt;</span>
     debug <span class="hljs-string">"New Watcher:<span class="hljs-subst">#{feed.url}</span>"</span>

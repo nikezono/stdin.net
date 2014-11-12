@@ -37,16 +37,8 @@ debug   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'
 
   FeedEvent = app.get(<span class="hljs-string">'events'</span>).FeedEvent app
 
-  request <span class="hljs-string">"http://b.hatena.ne.jp/hotentry"</span>,<span class="hljs-function"><span class="hljs-params">(err,res,body)</span>-&gt;</span>
-    <span class="hljs-keyword">if</span> err <span class="hljs-keyword">or</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
-      <span class="hljs-keyword">return</span> debug <span class="hljs-string">"can't connect hotentry url. err:<span class="hljs-subst">#{err}</span> res:<span class="hljs-subst">#{res.statusCode}</span>"</span>
-    $ = cheerio.load body
-    $(<span class="hljs-string">'.hb-entry-link-container a'</span>).each (e)-&gt;
-      entryUrl = $(<span class="hljs-keyword">this</span>).attr(<span class="hljs-string">"href"</span>)
-      debug <span class="hljs-string">"StartWith:<span class="hljs-subst">#{entryUrl}</span>"</span>
-
-      recursiveFind = async.queue (url,callback)-&gt;
-        debug <span class="hljs-string">"Find-RSS Start:<span class="hljs-subst">#{url}</span>"</span></pre></div></div>
+  recursiveFind = async.queue (url,callback)-&gt;
+    debug <span class="hljs-string">"Find-RSS Start:<span class="hljs-subst">#{url}</span>"</span></pre></div></div>
             
         </li>
         
@@ -61,7 +53,7 @@ debug   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        FeedEvent.findFeedAlias url,<span class="hljs-function"><span class="hljs-params">(err,urls)</span>-&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>    FeedEvent.findFeedAlias url,<span class="hljs-function"><span class="hljs-params">(err,urls)</span>-&gt;</span></pre></div></div>
             
         </li>
         
@@ -76,15 +68,15 @@ debug   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>          <span class="hljs-keyword">if</span> err
-            debug <span class="hljs-string">"Find-RSS Error:<span class="hljs-subst">#{url}</span>"</span>
-            app.emit <span class="hljs-string">'error'</span>, err
-          <span class="hljs-keyword">else</span>
-            <span class="hljs-keyword">if</span> urls.added.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> urls.alreadyAdded.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
-              debug <span class="hljs-string">"Find-RSS Notfound:<span class="hljs-subst">#{url}</span>"</span>
-            <span class="hljs-keyword">else</span>
-              debug <span class="hljs-string">"Find-RSS founded:<span class="hljs-subst">#{url}</span> registered:<span class="hljs-subst">#{urls.added}</span>"</span>
-              debug <span class="hljs-string">"Find-RSS founded:<span class="hljs-subst">#{url}</span> already:<span class="hljs-subst">#{urls.alreadyAdded}</span>"</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> err
+        debug <span class="hljs-string">"Find-RSS Error:<span class="hljs-subst">#{url}</span>"</span>
+        app.emit <span class="hljs-string">'error'</span>, err
+      <span class="hljs-keyword">else</span>
+        <span class="hljs-keyword">if</span> urls.added.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> urls.alreadyAdded.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+          debug <span class="hljs-string">"Find-RSS Notfound:<span class="hljs-subst">#{url}</span>"</span>
+        <span class="hljs-keyword">else</span>
+          debug <span class="hljs-string">"Find-RSS founded:<span class="hljs-subst">#{url}</span> registered:<span class="hljs-subst">#{urls.added}</span>"</span>
+          debug <span class="hljs-string">"Find-RSS founded:<span class="hljs-subst">#{url}</span> already:<span class="hljs-subst">#{urls.alreadyAdded}</span>"</span></pre></div></div>
             
         </li>
         
@@ -99,16 +91,40 @@ debug   = <span class="hljs-built_in">require</span>(<span class="hljs-string">'
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>          array = url.split(<span class="hljs-string">'/'</span>)
-          <span class="hljs-keyword">if</span> array.length &gt; <span class="hljs-number">3</span> <span class="hljs-comment"># http://hostname までは許す</span>
-            pop = array.pop()
-            poped = array.join(<span class="hljs-string">'/'</span>)
-            debug <span class="hljs-string">"Find-RSS pop:<span class="hljs-subst">#{pop}</span> retryWith:<span class="hljs-subst">#{poped}</span>"</span>
-            recursiveFind.push poped
-          <span class="hljs-keyword">else</span>
-            debug <span class="hljs-string">"Find-RSS <span class="hljs-subst">#{url}</span> is reach End"</span>
-          <span class="hljs-keyword">return</span> callback()
-      ,<span class="hljs-number">1</span> <span class="hljs-comment"># ワーカー数1で固定</span>
+            <div class="content"><div class='highlight'><pre>      array = url.split(<span class="hljs-string">'/'</span>)
+      <span class="hljs-keyword">if</span> array.length &gt; <span class="hljs-number">3</span> <span class="hljs-comment"># http://hostname までは許す</span>
+        pop = array.pop()
+        poped = array.join(<span class="hljs-string">'/'</span>)
+        debug <span class="hljs-string">"Find-RSS pop:<span class="hljs-subst">#{pop}</span> retryWith:<span class="hljs-subst">#{poped}</span>"</span>
+        recursiveFind.push poped
+      <span class="hljs-keyword">else</span>
+        debug <span class="hljs-string">"Find-RSS <span class="hljs-subst">#{url}</span> is reach End"</span>
+      <span class="hljs-keyword">return</span> callback()
+  ,app.get(<span class="hljs-string">'hatena crawler queue'</span>)
+
+  app.set <span class="hljs-string">'hatenaCrawlerQueue'</span>,recursiveFind</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>実行</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  request <span class="hljs-string">"http://b.hatena.ne.jp/hotentry"</span>,<span class="hljs-function"><span class="hljs-params">(err,res,body)</span>-&gt;</span>
+    <span class="hljs-keyword">if</span> err <span class="hljs-keyword">or</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
+      <span class="hljs-keyword">return</span> debug <span class="hljs-string">"can't connect hotentry url. err:<span class="hljs-subst">#{err}</span> res:<span class="hljs-subst">#{res.statusCode}</span>"</span>
+    $ = cheerio.load body
+    $(<span class="hljs-string">'.hb-entry-link-container a'</span>).each (e)-&gt;
+      entryUrl = $(<span class="hljs-keyword">this</span>).attr(<span class="hljs-string">"href"</span>)
+      debug <span class="hljs-string">"StartWith:<span class="hljs-subst">#{entryUrl}</span>"</span>
+
       recursiveFind.push entryUrl</pre></div></div>
             
         </li>
