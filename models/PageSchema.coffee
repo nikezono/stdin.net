@@ -25,9 +25,7 @@ PageSchema = new Mongo.Schema
   pubDate:     { type: Date, index:true }
   feed:        { type: Mongo.Schema.Types.ObjectId, ref: 'feeds' }
   article:     { type: Mongo.Schema.Types.Mixed }
-  body:        { type: String, default:"" }
-  keywords:    { type: Mongo.Schema.Types.Mixed, default:{} }
-  content:     { type: String, default:"" }
+  keywords:    { type: String }
 
 # Plugins
 PageSchema.plugin(random, { path: 'r' })
@@ -39,10 +37,7 @@ PageSchema.path('link').validate (link)->
 
 # Middleware
 PageSchema.post 'save',(doc)->
-  debug "Saved: #{doc.link}"
-  analyzeQueue.push doc,(err)->
-    debug err if err
-    return debug "Analyzed."
+
 
 # Model Methods
 
@@ -58,6 +53,16 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
       feed:feed._id
     ,(err,doc)->
       return callback err,null if err
+
+      # Analyzeのタスク飛ばしておく
+      analyzeQueue.push doc.link,(result)->
+        return debug result.error if result.error
+        doc.update
+          keywords:JSON.stringify result.keywords # Keyにイロイロ入るのでString
+        ,(err)->
+          return debug err if err
+          return debug "Analyzed.#{doc.link}"
+
       return callback null,doc
 
 exports.Page = Mongo.model 'pages', PageSchema
@@ -65,28 +70,21 @@ exports.Page = Mongo.model 'pages', PageSchema
 # Utility
 
 # 本文を取得し、特徴語を抽出するキュー
-exports.AnalyzeQueue = analyzeQueue = async.queue (page,callback)->
+exports.AnalyzeQueue = analyzeQueue = async.queue (link,callback)->
 
-  debug "AnalyzeQueue: #{page.link} Start."
+  debug "AnalyzeQueue: #{link} Start."
 
   # ここでのエラーはイベントだけ吐いて飲み込む
   d = domain.create()
-  d.on 'error',(err)->
-    return callback err
+  d.on 'error',(err)-> return callback error:err
   d.run ->
 
-    request page.link,(err,res,body)->
-      if err
-        return callback()
+    request link,(err,res,body)->
+      return callback error:err if err
       if res.statusCode isnt 200
-        debug "error analyzeQueue:#{page.link} #{res.statusCode}"
-        return callback()
-
+        debug "error analyzeQueue:#{link} #{res.statusCode}"
+        return callback error:new Error("Bad Status Code")
       keywords = keyword body
-      page.update
-        body:body
+      return callback
         keywords:keywords
-      ,(err)->
-        return callback err if err
-        return callback()
   ,process.env.ANALYZEQUEUE || 2
