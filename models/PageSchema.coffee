@@ -78,7 +78,7 @@ exports.Page = Mongo.model 'pages', PageSchema
 # Utility
 
 # 本文を取得し、特徴語を抽出するキュー
-analyzeQueue = async.queue (page,callback)->
+exports.AnalyzeQueue = analyzeQueue = async.queue (page,callback)->
 
   debug "AnalyzeQueue: #{page.link} Start."
 
