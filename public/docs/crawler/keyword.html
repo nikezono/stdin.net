@@ -22,9 +22,88 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <h1 id="-">#</h1>
-<h1 id="-">#</h1>
 
             </div>
+            
+            <div class="content"><div class='highlight'><pre>
+ キーワード検索
+
+<span class="hljs-attribute">Input</span>: <span class="hljs-string">"うちの庭には二羽の鶏がいるけど、きみんちの庭はどうなの"</span>
+<span class="hljs-attribute">Output</span>:
+  {<span class="hljs-string">"庭"</span>:<span class="hljs-number">2</span>},
+  {<span class="hljs-string">"二羽"</span>:<span class="hljs-number">1</span>},
+  {<span class="hljs-string">"いる"</span>:<span class="hljs-number">1</span>},
+  ...
+
+このフォーマットでキーワード出力が出来れば、以下の実装はいくら変えても良し
+
+<span class="hljs-property">@note</span> HerokuではCネイティブのライブラリをインストールさせられないので、MeCabが使いづらい.(方法はいくつかあるが)
+
+<span class="hljs-property">@version</span> <span class="hljs-number">14</span>/<span class="hljs-number">11</span>/<span class="hljs-number">12</span> TinySegmenter.js(<span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>chasen.org<span class="hljs-regexp">/~taku/software/TinySegmenter/</span>)を用いる</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h1 id="-">#</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+TinySegmenter = <span class="hljs-built_in">require</span> <span class="hljs-string">'./tinysegmenter.js'</span>
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">(input)</span>-&gt;</span>
+  ts = <span class="hljs-keyword">new</span> TinySegmenter()
+  hash = {}
+
+  filtered = <span class="hljs-string">""</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <h1 id="html-filter">HTML Filter</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">for</span> seg <span class="hljs-keyword">in</span> input.match <span class="hljs-keyword">new</span> RegExp(<span class="hljs-regexp">/&gt;.+?&lt;\//g</span>)
+    filtered = filtered + seg.replace(<span class="hljs-regexp">/^&gt;/</span>,<span class="hljs-string">""</span>).replace(<span class="hljs-regexp">/&lt;\/$/</span>,<span class="hljs-string">""</span>)
+
+  array = ts.segment filtered
+  <span class="hljs-keyword">for</span> word <span class="hljs-keyword">in</span> array
+
+    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> hash[word]
+      hash[word] = <span class="hljs-number">1</span>
+    <span class="hljs-keyword">else</span>
+      hash[word]++</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h1 id="-">二回以上言われていない言葉は切る</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">for</span> key,value <span class="hljs-keyword">of</span> hash
+    <span class="hljs-keyword">delete</span> hash[key] <span class="hljs-keyword">if</span> value &lt; <span class="hljs-number">2</span>
+
+  <span class="hljs-keyword">return</span> hash</pre></div></div>
             
         </li>
         

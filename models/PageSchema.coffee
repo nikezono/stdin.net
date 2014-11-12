@@ -15,7 +15,9 @@ _     = require 'underscore'
 request = require 'request'
 domain = require 'domain'
 random = require 'mongoose-random'
+path = require 'path'
 
+keyword = require path.resolve 'crawler/keyword'
 debug = require('debug')('stdin/models/page')
 
 PageSchema = new Mongo.Schema
@@ -24,7 +26,7 @@ PageSchema = new Mongo.Schema
   feed:        { type: Mongo.Schema.Types.ObjectId, ref: 'feeds' }
   article:     { type: Mongo.Schema.Types.Mixed }
   body:        { type: String, default:"" }
-  keywords:    { type: [String], default:[] }
+  keywords:    { type: Mongo.Schema.Types.Mixed, default:{} }
   content:     { type: String, default:"" }
 
 # Plugins
@@ -83,22 +85,22 @@ analyzeQueue = async.queue (page,callback)->
   # ここでのエラーはイベントだけ吐いて飲み込む
   d = domain.create()
   d.on 'error',(err)->
-    app.emit 'error',err
-    return callback()
+    return callback err
   d.run ->
 
     request page.link,(err,res,body)->
       if err
-        app.emit 'error', err
         return callback()
       if res.statusCode isnt 200
         debug "error analyzeQueue:#{page.link} #{res.statusCode}"
         return callback()
 
-      # @todo キーワード抽出
+      keywords = keyword body
+      debug keywords
       page.update
         body:body
+        keywords:keywords
       ,(err)->
-        return app.emit 'error',err if err
+        return callback err if err
         debug "Analyzed. #{page.link}"
   ,process.env.ANALYZEQUEUE || 2

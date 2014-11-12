@@ -54,7 +54,9 @@ _     = <span class="hljs-built_in">require</span> <span class="hljs-string">'un
 request = <span class="hljs-built_in">require</span> <span class="hljs-string">'request'</span>
 domain = <span class="hljs-built_in">require</span> <span class="hljs-string">'domain'</span>
 random = <span class="hljs-built_in">require</span> <span class="hljs-string">'mongoose-random'</span>
+path = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
 
+keyword = <span class="hljs-built_in">require</span> path.resolve <span class="hljs-string">'crawler/keyword'</span>
 debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'stdin/models/page'</span>)
 
 PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
@@ -63,7 +65,7 @@ PageSchema = <span class="hljs-keyword">new</span> Mongo.Schema
   <span class="hljs-attribute">feed</span>:        { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.ObjectId, <span class="hljs-attribute">ref</span>: <span class="hljs-string">'feeds'</span> }
   <span class="hljs-attribute">article</span>:     { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed }
   <span class="hljs-attribute">body</span>:        { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }
-  <span class="hljs-attribute">keywords</span>:    { <span class="hljs-attribute">type</span>: [String], <span class="hljs-attribute">default</span>:[] }
+  <span class="hljs-attribute">keywords</span>:    { <span class="hljs-attribute">type</span>: Mongo.Schema.Types.Mixed, <span class="hljs-attribute">default</span>:{} }
   <span class="hljs-attribute">content</span>:     { <span class="hljs-attribute">type</span>: String, <span class="hljs-attribute">default</span>:<span class="hljs-string">""</span> }</pre></div></div>
             
         </li>
@@ -227,35 +229,23 @@ exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema<
             
             <div class="content"><div class='highlight'><pre>  d = domain.create()
   d.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
-    app.emit <span class="hljs-string">'error'</span>,err
-    <span class="hljs-keyword">return</span> callback()
+    <span class="hljs-keyword">return</span> callback err
   d.run -&gt;
 
     request page.link,<span class="hljs-function"><span class="hljs-params">(err,res,body)</span>-&gt;</span>
       <span class="hljs-keyword">if</span> err
-        app.emit <span class="hljs-string">'error'</span>, err
         <span class="hljs-keyword">return</span> callback()
       <span class="hljs-keyword">if</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
         debug <span class="hljs-string">"error analyzeQueue:<span class="hljs-subst">#{page.link}</span> <span class="hljs-subst">#{res.statusCode}</span>"</span>
-        <span class="hljs-keyword">return</span> callback()</pre></div></div>
-            
-        </li>
-        
-        
-        <li id="section-12">
-            <div class="annotation">
-              
-              <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
-              </div>
-              <p>@todo キーワード抽出</p>
+        <span class="hljs-keyword">return</span> callback()
 
-            </div>
-            
-            <div class="content"><div class='highlight'><pre>      page.update
+      keywords = keyword body
+      debug keywords
+      page.update
         <span class="hljs-attribute">body</span>:body
+        <span class="hljs-attribute">keywords</span>:keywords
       ,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
-        <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+        <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err
         debug <span class="hljs-string">"Analyzed. <span class="hljs-subst">#{page.link}</span>"</span>
   ,process.env.ANALYZEQUEUE || <span class="hljs-number">2</span></pre></div></div>
             
