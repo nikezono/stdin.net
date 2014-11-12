@@ -240,7 +240,6 @@ exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema<
         <span class="hljs-keyword">return</span> callback()
 
       keywords = keyword body
-      debug keywords
       page.update
         <span class="hljs-attribute">body</span>:body
         <span class="hljs-attribute">keywords</span>:keywords

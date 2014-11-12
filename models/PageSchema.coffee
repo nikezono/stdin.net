@@ -96,7 +96,6 @@ analyzeQueue = async.queue (page,callback)->
         return callback()
 
       keywords = keyword body
-      debug keywords
       page.update
         body:body
         keywords:keywords
