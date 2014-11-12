@@ -40,6 +40,9 @@ PageSchema.path('link').validate (link)->
 # Middleware
 PageSchema.post 'save',(doc)->
   debug "Saved: #{doc.link}"
+  analyzeQueue.push doc,(err)->
+    debug err if err
+    return debug "Analyzed."
 
 # Model Methods
 
@@ -55,23 +58,7 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
       feed:feed._id
     ,(err,doc)->
       return callback err,null if err
-      analyzeQueue.push doc
       return callback null,doc
-
-
-# Create If Not Exists
-PageSchema.statics.createIfNotExists = (article,feed,callback)->
-  @findOne link:article.link,(err,doc)=>
-    if err
-      return callback err,null
-    if doc
-      debug "Already Registerd Link Is Published.#{article.link}"
-      return callback null,null
-
-    @upsertOneWithFeed article,feed,(err,page)->
-      return callback err,null if err
-      return callback null,page
-
 
 exports.Page = Mongo.model 'pages', PageSchema
 
@@ -101,5 +88,5 @@ exports.AnalyzeQueue = analyzeQueue = async.queue (page,callback)->
         keywords:keywords
       ,(err)->
         return callback err if err
-        debug "Analyzed. #{page.link}"
+        return callback()
   ,process.env.ANALYZEQUEUE || 2
