@@ -214,7 +214,7 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
             <div class="content"><div class='highlight'><pre>          feed.update <span class="hljs-attribute">links</span>:_.pluck(articles,<span class="hljs-string">'link'</span>),<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
             <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err
             <span class="hljs-keyword">return</span> callback()
-  ,<span class="hljs-number">2</span>
+  ,app.get(<span class="hljs-string">'feed crawler queue'</span>)
 
   <span class="hljs-attribute">createWatcher</span>: <span class="hljs-function"><span class="hljs-params">(feed,callback)</span>-&gt;</span>
     debug <span class="hljs-string">"New Watcher:<span class="hljs-subst">#{feed.url}</span>"</span>
