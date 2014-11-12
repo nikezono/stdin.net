@@ -106,7 +106,7 @@ exports = module.exports = (app)->
       debug "Initialize End:#{feed.url}"
 
       # タイマーセット
-      dt.post {url:feed.url},1000*60*3,(err,evId)->
+      dt.post {url:feed.url},app.get('timer interval'),(err,evId)->
         return app.emit 'error', err if err
 
       return callback()

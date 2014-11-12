@@ -30,8 +30,10 @@ app = express()
 # env
 app.set 'env', process.env.NODE_ENV || 'development'
 app.set 'port', process.env.PORT || 3000
-app.set 'feed crawler queue', process.env.FEEDQUEUE || 2 # RSSクローラの並列処理可能数
+app.set 'feed crawler queue', process.env.FEEDQUEUE || 10 # RSSクローラの並列処理可能数
 app.set 'hatena crawler queue', process.env.HATENAQUEUE || 2 # はてなクローラ(フィード探索)の並列処理可能数
+app.set 'timer interval', process.env.TIMERINTERVAL || 1000*60*5 # フィード取得のインターバル(5分)
+
 
 # views
 app.set "views", path.resolve "views"

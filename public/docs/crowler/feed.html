@@ -241,7 +241,7 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      dt.post {<span class="hljs-attribute">url</span>:feed.url},<span class="hljs-number">1000</span>*<span class="hljs-number">60</span>*<span class="hljs-number">3</span>,<span class="hljs-function"><span class="hljs-params">(err,evId)</span>-&gt;</span>
+            <div class="content"><div class='highlight'><pre>      dt.post {<span class="hljs-attribute">url</span>:feed.url},app.get(<span class="hljs-string">'timer interval'</span>),<span class="hljs-function"><span class="hljs-params">(err,evId)</span>-&gt;</span>
         <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>, err <span class="hljs-keyword">if</span> err
 
       <span class="hljs-keyword">return</span> callback()
