@@ -7,7 +7,7 @@
 request = require 'request'
 cheerio = require 'cheerio'
 async   = require 'async'
-debug   = require('debug')('stdin/crowler/hatenaHotentry')
+debug   = require('debug')('stdin/crawler/hatenaHotentry')
 
 module.exports = (app)->
 
@@ -53,4 +53,3 @@ module.exports = (app)->
       debug "StartWith:#{entryUrl}"
 
       recursiveFind.push entryUrl
-

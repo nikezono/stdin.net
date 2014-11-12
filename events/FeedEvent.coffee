@@ -66,7 +66,7 @@ module.exports.FeedEvent = (app) ->
               if err
                 app.emit 'error',err if err
                 return cb()
-              app.get('crowler').createWatcher doc,(err)->
+              app.get('crawler').createWatcher doc,(err)->
                 urls.push doc.feed.link
                 return cb()
         ,->
@@ -99,9 +99,8 @@ module.exports.FeedEvent = (app) ->
           app.emit 'error',err if err
           return res.send 500
         if doc
-          app.get('crowler').createWatcher doc,(err)->
+          app.get('crawler').createWatcher doc,(err)->
             if err
               app.emit 'error',err
               return res.send 500
             res.send 200
-

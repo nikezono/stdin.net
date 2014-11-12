@@ -7,12 +7,18 @@
 debug = require('debug')('stdin/events/home')
 module.exports.HomeEvent = (app) ->
 
-  index: (req,res,next)->
-    hatenaCrowlerQueue = app.get 'hatenaCrawlerQueue'
-    feedCrowlerQueue = app.get 'feedCrawlerQueue'
-    debug feedCrowlerQueue
-    res.render "index",
-      memoryUsage:"#{process.memoryUsage().rss/1024/1024}MB"
-      hatena:hatenaCrowlerQueue?.length() || 0
-      feed:feedCrowlerQueue?.length() || 0
+  Feed = app.get('models').Feed
 
+  index: (req,res,next)->
+    hatenaCrawlerQueue = app.get 'hatenaCrawlerQueue'
+    feedCrawlerQueue = app.get 'feedCrawlerQueue'
+    debug feedCrawlerQueue
+    Feed.count (err,count)->
+      if err
+        app.emit 'error',err
+        return res.send 500
+      res.render "index",
+        memoryUsage:"#{process.memoryUsage().rss/1024/1024}MB"
+        search:hatenaCrawlerQueue?.length() || "undef" # フィード探索キュー残数
+        feed:feedCrawlerQueue?.length() || "undef" # フィード取得キュー残数
+        feedCount:count || "undef"

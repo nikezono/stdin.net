@@ -180,7 +180,7 @@ finder.setOptions
               <span class="hljs-keyword">if</span> err
                 app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
                 <span class="hljs-keyword">return</span> cb()
-              app.get(<span class="hljs-string">'crowler'</span>).createWatcher doc,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+              app.get(<span class="hljs-string">'crawler'</span>).createWatcher doc,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
                 urls.push doc.feed.link
                 <span class="hljs-keyword">return</span> cb()
         ,<span class="hljs-function">-&gt;</span>
@@ -248,7 +248,7 @@ finder.setOptions
           app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
           <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
         <span class="hljs-keyword">if</span> doc
-          app.get(<span class="hljs-string">'crowler'</span>).createWatcher doc,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+          app.get(<span class="hljs-string">'crawler'</span>).createWatcher doc,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
             <span class="hljs-keyword">if</span> err
               app.emit <span class="hljs-string">'error'</span>,err
               <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>

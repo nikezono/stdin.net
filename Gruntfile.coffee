@@ -45,7 +45,7 @@ module.exports = (grunt) ->
           { expand: yes, cwd: './', src: [ '*.coffee' ] }
           { expand: yes, cwd: 'models/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'config/', src: [ '**/*.coffee' ] }
-          { expand: yes, cwd: 'crowler/', src: [ '**/*.coffee' ] }
+          { expand: yes, cwd: 'crawler/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'events/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'routes/', src: [ '**/*.coffee' ] }
           { expand: yes, cwd: 'assets/', src: [ '**/*.coffee' ] }
@@ -61,7 +61,7 @@ module.exports = (grunt) ->
           'events/**/*.coffee'
           'config/**/*.coffee'
           'routes/**/*.coffee'
-          'crowler/**/*.coffee'
+          'crawler/**/*.coffee'
           'views/**/*.jade'
           'assets/**//*.coffee'
           'test/**/*.coffee'
@@ -108,7 +108,7 @@ module.exports = (grunt) ->
           'events/**/*.coffee'
           'config/**/*.coffee'
           'routes/**/*.coffee'
-          'crowler/**/*.coffee'
+          'crawler/**/*.coffee'
           'assets/**/*.coffee'
           'test/**/*.coffee'
         ]

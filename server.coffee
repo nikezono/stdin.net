@@ -44,16 +44,16 @@ server.listen app.get("port"), ->
 
 ## クローラ起動
 # RSSクローラ
-crowler = require(path.resolve 'crowler','feed') app
-crowler.initialize()
-app.set 'crowler',crowler
+FeedCrawler = require(path.resolve 'crawler','feed')
+crawler = new FeedCrawler(app)
+crawler.initialize()
+app.set 'crawler',crawler
 
 # はてなクローラ
-hatenaCrowler = require(path.resolve 'crowler','hatenaHotentry')
-hatenaCrowler(app)
-recursiveCrowl = ->
+hatenaCrawler = require(path.resolve 'crawler','hatenaHotentry')
+hatenaCrawler(app)
+recursiveCrawl = ->
   setTimeout ->
-    hatenaCrowler(app)
-    recursiveCrowl()
+    hatenaCrawler(app)
+    recursiveCrawl()
   ,1000*60*60*1 # 1hour
-

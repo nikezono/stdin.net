@@ -1,18 +1,14 @@
 ###
 
-Crowler.coffee
-全FeedのCrowlerをメモリに持つ
+Crawler.coffee
 
 ###
 
-debug = require('debug')('stdin/crowler/feed')
-domain = require('domain')
+debug = require('debug')('stdin/crawler/feed')
 _    = require 'underscore'
 async = require 'async'
 request = require 'request'
-
 DTimer = require('dtimer').DTimer
-
 redis = require('redis')
 url = require("url")
 
@@ -35,16 +31,34 @@ exports = module.exports = (app)->
   Feed = app.get('models').Feed
   Page = app.get('models').Page
 
+  interval = app.get('timer interval')
+
   # タイマーを生成
   dt = new DTimer("stdin", pub, sub)
   dt.on 'error',(err)-> return app.emit 'error',err
 
+  # イベントハンドラ
+  dt.on 'event',(object)=>
+    url = object.url
+    debug "DTimer:#{url}"
+
+    # 取得/追加
+    parseAndUpdate.push url,(err)->
+      return app.emit 'error',err if err
+
+      # 取得/計算終了時、タイマー起動
+      dt.post {url:url},interval,(err,evId)->
+        return app.emit 'error',err if err
+
+  # タイマー起動
+  dt.join (err)->
+    return throw Error("Cant Generate Redis Event Listener:#{err}") if err
+    debug "dtimer setup completed."
 
   parseAndUpdate = async.queue (url,callback)->
-
     debug "parseAndUpdate #{url}"
 
-    # Feed探索
+    # Feed取得
     Feed.findOne url:url,(err,feed)->
       return callback err if err
 
@@ -62,7 +76,6 @@ exports = module.exports = (app)->
       feedParser.on 'error', (err)-> return app.emit 'error',err
       feedParser.on 'readable', ->
         stream = this
-
         # 記事ごとに、新着かどうか判定
         if article = stream.read()
           articles.push article
@@ -73,9 +86,13 @@ exports = module.exports = (app)->
           newArticles.push article
 
       feedParser.on 'end', ->
-        return callback() if articles.length is 0 or newArticles.length is 0
 
-        # ページオブジェクト更新
+        # 新着記事が存在しない場合、終了
+        if articles.length is 0 or newArticles.length is 0
+          debug "Nothing new Article:#{feed.url}"
+          return callback()
+
+        # 新着記事が存在する場合,ページオブジェクト更新
         async.forEach newArticles,(article,cb)->
           Page.upsertOneWithFeed article,feed,(err,page)->
             if err
@@ -91,7 +108,8 @@ exports = module.exports = (app)->
           feed.update links:_.pluck(articles,'link'),(err)->
             return callback err if err
             return callback()
-  ,app.get('feed crawler queue')
+
+  ,interval
 
   app.set 'feedCrawlerQueue', parseAndUpdate
 
@@ -101,44 +119,27 @@ exports = module.exports = (app)->
   createWatcher: (feed,callback)->
     debug "New Watcher:#{feed.url}"
     @parseAndUpdate.push feed.url,(err)=>
-      return callback err if err
-
+      return callback err if err and callback
       debug "Initialize End:#{feed.url}"
 
       # タイマーセット
-      dt.post {url:feed.url},app.get('timer interval'),(err,evId)->
-        return app.emit 'error', err if err
+      dt.post {url:feed.url},interval,(err,evId)->
+        return app.emit 'error',err if err
 
-      return callback()
+      return callback() if callback
 
   initialize : ->
 
-    @initializeTimer()
+    debug "Feed Crawler Start:Interval #{interval/(60*1000)}min"
     Feed.find {}, (err,feeds)=>
       return debug err if err
-      for feed in feeds
+
+      async.forEach feeds,(feed,cb)=>
         @createWatcher feed,(err)->
-          return app.emit 'error',err if err
+          if err
+            app.emit 'error',err
+            return cb()
           debug "Create Watcher #{feed.feed.title}"
-
-  initializeTimer: ->
-
-    # イベント時処理
-    dt.on 'event',(object)=>
-      url = object.url
-      debug "DTimer:#{url}"
-
-      # 取得/追加
-      @parseAndUpdate.push url,(err)->
-        return app.emit 'error',err if err
-
-        # 取得/計算終了時、タイマー起動
-        dt.post {url:url},app.get('timer interval'),(err,evId)->
-          return app.emit 'error',err if err
-
-    # タイマー起動
-    dt.join (err)->
-      return throw Error("Cant Generate Redis Event Listener:#{err}") if err
-      debug "dtimer setup completed."
-
-
+          return cb()
+      ,->
+        debug "FeedCrawler Initialize End"
