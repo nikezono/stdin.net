@@ -257,7 +257,7 @@ exports.Page = Mongo.model <span class="hljs-string">'pages'</span>, PageSchema<
       ,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
         <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
         debug <span class="hljs-string">"Analyzed. <span class="hljs-subst">#{page.link}</span>"</span>
-  ,app.get(<span class="hljs-string">'analyze queue'</span>)</pre></div></div>
+  ,process.env.ANALYZEQUEUE || <span class="hljs-number">2</span></pre></div></div>
             
         </li>
         

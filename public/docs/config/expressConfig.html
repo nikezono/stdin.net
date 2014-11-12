@@ -116,8 +116,7 @@ app = express()</pre></div></div>
             <div class="content"><div class='highlight'><pre>app.set <span class="hljs-string">'env'</span>, process.env.NODE_ENV || <span class="hljs-string">'development'</span>
 app.set <span class="hljs-string">'port'</span>, process.env.PORT || <span class="hljs-number">3000</span>
 app.set <span class="hljs-string">'feed crawler queue'</span>, process.env.FEEDQUEUE || <span class="hljs-number">2</span> <span class="hljs-comment"># RSSクローラの並列処理可能数</span>
-app.set <span class="hljs-string">'hatena crawler queue'</span>, process.env.HATENAQUEUE || <span class="hljs-number">2</span> <span class="hljs-comment"># はてなクローラ(フィード探索)の並列処理可能数</span>
-app.set <span class="hljs-string">'analyze queue'</span>,process.env.ANALYZEQUEUE || <span class="hljs-number">2</span> <span class="hljs-comment"># 記事データの後処理の並列処理数</span></pre></div></div>
+app.set <span class="hljs-string">'hatena crawler queue'</span>, process.env.HATENAQUEUE || <span class="hljs-number">2</span> <span class="hljs-comment"># はてなクローラ(フィード探索)の並列処理可能数</span></pre></div></div>
             
         </li>
         

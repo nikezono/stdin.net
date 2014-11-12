@@ -66,9 +66,9 @@ module.exports.FeedEvent = (app) ->
               if err
                 app.emit 'error',err if err
                 return cb()
-              app.get('crowler').addToSet doc
-              urls.push doc.feed.link
-              return cb()
+              app.get('crowler').createWatcher doc,(err)->
+                urls.push doc.feed.link
+                return cb()
         ,->
           callback null,
             added:urls
