@@ -133,7 +133,7 @@ exports = module.exports = (app)->
         return app.emit 'error',err if err
 
         # 取得/計算終了時、タイマー起動
-        dt.post {url:url},1000*60*3,(err,evId)->
+        dt.post {url:url},app.get('timer interval'),(err,evId)->
           return app.emit 'error',err if err
 
     # タイマー起動
