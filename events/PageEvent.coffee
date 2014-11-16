@@ -4,12 +4,13 @@
 
 ###
 
-debug = require("debug")("stdin/events/page")
-_     = require 'underscore'
-request = require 'request'
+debug      = require("debug")("stdin/events/page")
+_          = require 'underscore'
+request    = require 'request'
 JSONStream = require 'JSONStream'
-ObjectId = require('mongoose').Types.ObjectId
-async = require 'async'
+stream     = require('stream')
+ObjectId   = require('mongoose').Types.ObjectId
+async      = require 'async'
 
 module.exports.PageEvent = (app) ->
   Page        = app.get("models").Page
@@ -150,14 +151,61 @@ module.exports.PageEvent = (app) ->
         return res.end()
       return res.send 404
 
-  # GET /api/page/stream
-  # 追加される度に流していくhttpStream
-  # @todo 実装
+  ###
+
+  @todo 同じIPアドレスからのStreaming接続数を制限する
+  @api {GET}  /api/page/stream ページストリーム
+  @apiVersion 0.1.0
+  @apiName 記事リスト取得
+  @apiDescription ページ更新のストリームを取得します。
+
+    HTTPコネクションをcloseせずに、新着データを送信し続けます。
+
+    `waitForAnalyze`パラメータを設定しなければ、たいていの場合、
+    `keywords`などのフィールドは空です。
+
+    参考: http://ajaxpatterns.org/HTTP_Streaming
+
+    Sample: http://www.stdin.net/api/page/stream
+
+  @apiParam {Boolean} populateFeed 配信元フィードの情報を含める(default=true)
+  @apiParam {Boolean} waitForAnalyze データの後処理が終わってから配信してもらう(default=true)
+
+  @apiSuccess {JSONArray} json 成功時コールバック
+  @apiSuccessExample {json} Success-Response:
+    [
+      {
+        _id: "ObjectId("54512b79e959d9d2bdc6f50b")" // MongoDBのObjectId(Unique)
+        link: "http://www.ping.pong/article/1.html" // 記事へのPermalink
+        article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }
+        feed:{
+          url: "http://www.ping.pong/feed.xml" // RSS/AtomフィードのURL
+          feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
+        // 以下,記事生成後にジョブキューにより生成
+        keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
+      }
+    ,...]
+
+  @apiError InternalServerError(500) ありえるかな
+
+  ###
   getPageStream: (req,res,next)->
 
     # Options
+    # 実行順
     options = req.query
-    res.send []
+    options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
+    options.waitForAnalyze = if options.waitForAnalyze is 'false' then false else true # 後処理を待つ
+
+    responseStream = new stream.Duplex()
+    responseStream.pipe res
+
+    if options.waitForAnalyze
+      app.on 'new page analyzed',(data)->
+        responseStream.write data
+    else
+      app.on 'new page',(data)->
+        responseStream.write data
 
   # GET /api/page/latest
   getLatestPages: (req,res,next)->

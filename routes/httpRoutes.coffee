@@ -23,8 +23,7 @@ module.exports = (app) ->
   app.get  '/api/page/list',       (req,res,next)-> PageEvent.getPageList req,res,next
   app.get  '/api/page/stream',     (req,res,next)-> PageEvent.getPageStream req,res,next
   app.get  '/api/page/latest',     (req,res,next)-> PageEvent.getLatestPages req,res,next
-  app.get  '/api/page/find',        (req,res,next)-> PageEvent.getPageOne req,res,next
-
+  app.get  '/api/page/find',       (req,res,next)-> PageEvent.getPageOne req,res,next
 
   # 404 Not Found
   app.get  '/*',           (req,res,next)-> res.send 404
