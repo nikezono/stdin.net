@@ -5,10 +5,11 @@
 ###
 
 debug = require('debug')('stdin/events/home')
+path = require 'path'
 module.exports.HomeEvent = (app) ->
 
   Feed = app.get('models').Feed
-  AnalyzeQueue = app.get('models').AnalyzeQueue
+  AnalyzeQueue = require(path.resolve('crawler','postProcessing')).AnalyzeQueue
 
   index: (req,res,next)->
     hatenaCrawlerQueue = app.get 'hatenaCrawlerQueue'
