@@ -95,8 +95,6 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
         <span class="hljs-attribute">feed</span>: { <span class="hljs-attribute">https</span>:<span class="hljs-regexp">//gi</span>thub.com/danmactough/node-feedparser<span class="hljs-comment">#list-of-meta-properties }</span>
       <span class="hljs-regexp">//</span> 以下,記事生成後にジョブキューにより生成
       <span class="hljs-attribute">keywords</span>: {<span class="hljs-string">"ping"</span>:<span class="hljs-number">10</span>,<span class="hljs-string">"pong"</span>:<span class="hljs-number">2</span>,<span class="hljs-string">"bang"</span>:<span class="hljs-number">5</span>} <span class="hljs-regexp">//</span> 本文中の頻出語
-      <span class="hljs-attribute">body</span>: <span class="hljs-string">"&lt;html&gt;&lt;body&gt;&lt;p&gt;hoge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"</span> <span class="hljs-regexp">//</span> URLの参照先全文
-      <span class="hljs-attribute">content</span>: <span class="hljs-string">"hoge"</span> <span class="hljs-regexp">//</span> 本文抽出されたテキスト
     }
 
   <span class="hljs-property">@apiError</span> PageNotFound(<span class="hljs-number">404</span>) 当該ページが存在しないとき
@@ -198,8 +196,6 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
           <span class="hljs-attribute">feed</span>: { <span class="hljs-attribute">https</span>:<span class="hljs-regexp">//gi</span>thub.com/danmactough/node-feedparser<span class="hljs-comment">#list-of-meta-properties }</span>
         <span class="hljs-regexp">//</span> 以下,記事生成後にジョブキューにより生成
         <span class="hljs-attribute">keywords</span>: {<span class="hljs-string">"ping"</span>:<span class="hljs-number">10</span>,<span class="hljs-string">"pong"</span>:<span class="hljs-number">2</span>,<span class="hljs-string">"bang"</span>:<span class="hljs-number">5</span>} <span class="hljs-regexp">//</span> 本文中の頻出語
-        <span class="hljs-attribute">body</span>: <span class="hljs-string">"&lt;html&gt;&lt;body&gt;&lt;p&gt;hoge&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;"</span> <span class="hljs-regexp">//</span> URLの参照先全文
-        <span class="hljs-attribute">content</span>: <span class="hljs-string">"hoge"</span> <span class="hljs-regexp">//</span> 本文抽出されたテキスト
       }
     ,...]
 
@@ -244,9 +240,11 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
     promise = Page
     promise = promise.find() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> options.random
     promise = promise.findRandom() <span class="hljs-keyword">if</span> options.random
-    promise = promise.find(<span class="hljs-attribute">pubDate</span>:<span class="hljs-string">"$lte"</span>:<span class="hljs-keyword">new</span> Date()).sort(<span class="hljs-attribute">pubDate</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
-    promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
+    promise = promise.sort(<span class="hljs-attribute">pubDate</span>:-<span class="hljs-number">1</span>) <span class="hljs-keyword">if</span> options.sortByPubDate
+    promise = promise.select <span class="hljs-string">'-r -__v'</span>
+    promise = promise.populate(<span class="hljs-string">'feed'</span>,<span class="hljs-string">'-pages -links'</span>) <span class="hljs-keyword">if</span> options.populateFeed
     promise = promise.limit(options.limit)
+    promise = promise.find(<span class="hljs-attribute">pubDate</span>:<span class="hljs-string">"$lte"</span>:<span class="hljs-keyword">new</span> Date()) <span class="hljs-comment">#現在より先の記事をフィルタ</span>
     index = <span class="hljs-number">0</span>
     promise = promise.stream()
     .<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>

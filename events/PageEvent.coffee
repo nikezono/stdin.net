@@ -45,8 +45,6 @@ module.exports.PageEvent = (app) ->
         feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
       // 以下,記事生成後にジョブキューにより生成
       keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
-      body: "<html><body><p>hoge</p></body></html>" // URLの参照先全文
-      content: "hoge" // 本文抽出されたテキスト
     }
 
   @apiError PageNotFound(404) 当該ページが存在しないとき
@@ -111,8 +109,6 @@ module.exports.PageEvent = (app) ->
           feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
         // 以下,記事生成後にジョブキューにより生成
         keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
-        body: "<html><body><p>hoge</p></body></html>" // URLの参照先全文
-        content: "hoge" // 本文抽出されたテキスト
       }
     ,...]
 
@@ -133,9 +129,11 @@ module.exports.PageEvent = (app) ->
     promise = Page
     promise = promise.find() if not options.random
     promise = promise.findRandom() if options.random
-    promise = promise.find(pubDate:"$lte":new Date()).sort(pubDate:-1) if options.sortByPubDate
-    promise = promise.populate('feed') if options.populateFeed
+    promise = promise.sort(pubDate:-1) if options.sortByPubDate
+    promise = promise.select '-r -__v'
+    promise = promise.populate('feed','-pages -links') if options.populateFeed
     promise = promise.limit(options.limit)
+    promise = promise.find(pubDate:"$lte":new Date()) #現在より先の記事をフィルタ
     index = 0
     promise = promise.stream()
     .on 'error', (err) ->
