@@ -277,6 +277,8 @@ async      = <span class="hljs-built_in">require</span> <span class="hljs-string
             
             <div class="content"><div class='highlight'><pre>
   <span class="hljs-property">@todo</span> 同じIPアドレスからのStreaming接続数を制限する
+  <span class="hljs-property">@todo</span> RFC勧告をチェックして、従う
+  <span class="hljs-property">@note</span> HTML5 Server Sent Events使う?
   <span class="hljs-property">@api</span> {GET}  /api/page/stream ページストリーム
   <span class="hljs-property">@apiVersion</span> <span class="hljs-number">0.1</span><span class="hljs-number">.0</span>
   <span class="hljs-property">@apiName</span> 記事リスト取得
@@ -287,7 +289,10 @@ async      = <span class="hljs-built_in">require</span> <span class="hljs-string
     `<span class="javascript">waitForAnalyze</span>`パラメータを設定しなければ、たいていの場合、
     `<span class="javascript">keywords</span>`などのフィールドは空です。
 
-    参考: <span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>ajaxpatterns.org/HTTP_Streaming
+    参考<span class="hljs-attribute">URL</span>:
+
+      * <span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>ajaxpatterns.org/HTTP_Streaming
+
 
     <span class="hljs-attribute">Sample</span>: <span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>www.stdin.net/api/page/stream
 
@@ -296,7 +301,6 @@ async      = <span class="hljs-built_in">require</span> <span class="hljs-string
 
   <span class="hljs-property">@apiSuccess</span> {JSONArray} json 成功時コールバック
   <span class="hljs-property">@apiSuccessExample</span> {json} Success-<span class="hljs-attribute">Response</span>:
-    [
       {
         <span class="hljs-attribute">_id</span>: <span class="hljs-string">"ObjectId("</span><span class="hljs-number">54512</span>b79e959d9d2bdc6f50b<span class="hljs-string">")"</span> <span class="hljs-regexp">//</span> MongoDBのObjectId(Unique)
         <span class="hljs-attribute">link</span>: <span class="hljs-string">"http://www.ping.pong/article/1.html"</span> <span class="hljs-regexp">//</span> 記事へのPermalink
@@ -307,7 +311,7 @@ async      = <span class="hljs-built_in">require</span> <span class="hljs-string
         <span class="hljs-regexp">//</span> 以下,記事生成後にジョブキューにより生成
         <span class="hljs-attribute">keywords</span>: {<span class="hljs-string">"ping"</span>:<span class="hljs-number">10</span>,<span class="hljs-string">"pong"</span>:<span class="hljs-number">2</span>,<span class="hljs-string">"bang"</span>:<span class="hljs-number">5</span>} <span class="hljs-regexp">//</span> 本文中の頻出語
       }
-    ,...]
+    ,...
 
   <span class="hljs-property">@apiError</span> InternalServerError(<span class="hljs-number">500</span>) ありえるかな</pre></div></div>
             
@@ -335,8 +339,7 @@ async      = <span class="hljs-built_in">require</span> <span class="hljs-string
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
-              <p>Options
-実行順</p>
+              <p>Options</p>
 
             </div>
             
@@ -344,15 +347,29 @@ async      = <span class="hljs-built_in">require</span> <span class="hljs-string
     options.populateFeed =  <span class="hljs-keyword">if</span> options.populateFeed <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
     options.waitForAnalyze = <span class="hljs-keyword">if</span> options.waitForAnalyze <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span> <span class="hljs-literal">true</span> <span class="hljs-comment"># 後処理を待つ</span>
 
-    responseStream = <span class="hljs-keyword">new</span> stream.Duplex()
-    responseStream.pipe res
+    res.status(<span class="hljs-number">200</span>)
+    res.set
+      <span class="hljs-string">"Content-Type"</span>:<span class="hljs-string">"application/json"</span>
+      <span class="hljs-string">'Connection'</span>:<span class="hljs-string">'close'</span>
+      <span class="hljs-string">"transfer-encoding"</span>:<span class="hljs-string">"chunked"</span>
+      <span class="hljs-string">"Cache-Control"</span>:<span class="hljs-string">"no-cache"</span>
+<span class="hljs-function">
+    <span class="hljs-title">findOneWithIdAndWriteResponse</span> = <span class="hljs-params">(pageId)</span>-&gt;</span>
+      promise = Page.findOne(<span class="hljs-attribute">_id</span>:pageId)
+      promise = promise.select <span class="hljs-string">'-r -__v'</span>
+      promise = promise.populate(<span class="hljs-string">'feed'</span>,<span class="hljs-string">'-pages -links'</span>) <span class="hljs-keyword">if</span> options.populateFeed
+      promise.exec (err,page)-&gt;
+        <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+        res.write JSON.stringify(page).replace(<span class="hljs-string">'\n'</span>,<span class="hljs-string">''</span>)
+        res.write <span class="hljs-string">'\n'</span>
 
     <span class="hljs-keyword">if</span> options.waitForAnalyze
-      app.<span class="hljs-literal">on</span> <span class="hljs-string">'new page analyzed'</span>,<span class="hljs-function"><span class="hljs-params">(data)</span>-&gt;</span>
-        responseStream.write data
+      app.<span class="hljs-literal">on</span> <span class="hljs-string">'new page analyzed'</span>,<span class="hljs-function"><span class="hljs-params">(pageId)</span>-&gt;</span>
+        findOneWithIdAndWriteResponse pageId
+
     <span class="hljs-keyword">else</span>
-      app.<span class="hljs-literal">on</span> <span class="hljs-string">'new page'</span>,<span class="hljs-function"><span class="hljs-params">(data)</span>-&gt;</span>
-        responseStream.write data</pre></div></div>
+      app.<span class="hljs-literal">on</span> <span class="hljs-string">'new page'</span>,<span class="hljs-function"><span class="hljs-params">(pageId)</span>-&gt;</span>
+        findOneWithIdAndWriteResponse pageId</pre></div></div>
             
         </li>
         

@@ -154,6 +154,8 @@ module.exports.PageEvent = (app) ->
   ###
 
   @todo 同じIPアドレスからのStreaming接続数を制限する
+  @todo RFC勧告をチェックして、従う
+  @note HTML5 Server Sent Events使う?
   @api {GET}  /api/page/stream ページストリーム
   @apiVersion 0.1.0
   @apiName 記事リスト取得
@@ -164,7 +166,10 @@ module.exports.PageEvent = (app) ->
     `waitForAnalyze`パラメータを設定しなければ、たいていの場合、
     `keywords`などのフィールドは空です。
 
-    参考: http://ajaxpatterns.org/HTTP_Streaming
+    参考URL:
+
+      * http://ajaxpatterns.org/HTTP_Streaming
+
 
     Sample: http://www.stdin.net/api/page/stream
 
@@ -173,7 +178,6 @@ module.exports.PageEvent = (app) ->
 
   @apiSuccess {JSONArray} json 成功時コールバック
   @apiSuccessExample {json} Success-Response:
-    [
       {
         _id: "ObjectId("54512b79e959d9d2bdc6f50b")" // MongoDBのObjectId(Unique)
         link: "http://www.ping.pong/article/1.html" // 記事へのPermalink
@@ -184,7 +188,7 @@ module.exports.PageEvent = (app) ->
         // 以下,記事生成後にジョブキューにより生成
         keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
       }
-    ,...]
+    ,...
 
   @apiError InternalServerError(500) ありえるかな
 
@@ -192,20 +196,33 @@ module.exports.PageEvent = (app) ->
   getPageStream: (req,res,next)->
 
     # Options
-    # 実行順
     options = req.query
     options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
     options.waitForAnalyze = if options.waitForAnalyze is 'false' then false else true # 後処理を待つ
 
-    responseStream = new stream.Duplex()
-    responseStream.pipe res
+    res.status(200)
+    res.set
+      "Content-Type":"application/json"
+      'Connection':'close'
+      "transfer-encoding":"chunked"
+      "Cache-Control":"no-cache"
+
+    findOneWithIdAndWriteResponse = (pageId)->
+      promise = Page.findOne(_id:pageId)
+      promise = promise.select '-r -__v'
+      promise = promise.populate('feed','-pages -links') if options.populateFeed
+      promise.exec (err,page)->
+        return app.emit 'error',err if err
+        res.write JSON.stringify(page).replace('\n','')
+        res.write '\n'
 
     if options.waitForAnalyze
-      app.on 'new page analyzed',(data)->
-        responseStream.write data
+      app.on 'new page analyzed',(pageId)->
+        findOneWithIdAndWriteResponse pageId
+
     else
-      app.on 'new page',(data)->
-        responseStream.write data
+      app.on 'new page',(pageId)->
+        findOneWithIdAndWriteResponse pageId
 
   # GET /api/page/latest
   getLatestPages: (req,res,next)->
@@ -222,5 +239,3 @@ module.exports.PageEvent = (app) ->
 
     # @todo 実装
     return res.json []
-
-

@@ -31,6 +31,8 @@ else
 Feed = (require path.resolve 'models','FeedSchema').Feed
 Page = (require path.resolve 'models','PageSchema').Page
 
+AnalyzeQueue = (require path.resolve 'crawler','postProcessing').AnalyzeQueue
+
 exports = module.exports = class FeedCrawler
   app = null
 
@@ -81,51 +83,67 @@ exports = module.exports = class FeedCrawler
       debug "Create Watcher #{feed.feed.title}"
       return callback
 
-# パーサ
-parser = (object,callback)->
-  debug "parseAndUpdate #{object.url}"
+  # パーサ
+  parser = (object,callback)->
+    debug "parseAndUpdate #{object.url}"
 
-  # Feed探索
-  Feed.findOne url:object.url,(err,feed)->
-    return callback err if err
+    # Feed探索
+    Feed.findOne url:object.url,(err,feed)->
+      return callback err if err
 
-    # リクエスト/Parsing
-    req = request object.url
-    req.on 'error',(err)-> return callback err
-    req.on 'response',(res)->
-      return this.emit 'error', new Error('Bad status code') if res.statusCode isnt 200
-      stream = this
-      stream.pipe feedParser
+      # リクエスト/Parsing
+      req = request object.url
+      req.on 'error',(err)-> return callback err
+      req.on 'response',(res)->
+        return this.emit 'error', new Error('Bad status code') if res.statusCode isnt 200
+        stream = this
+        stream.pipe feedParser
 
-    articles = []
-    newArticles = []
-    feedParser = new (require('feedparser'))({addmeta:true})
-    feedParser.on 'error', (err)-> return object.app.emit 'error',err
-    feedParser.on 'readable', ->
-      stream = this
-      # 記事ごとに、新着かどうか判定
-      if article = stream.read()
-        articles.push article
-      else return
+      articles = []
+      newArticles = []
+      feedParser = new (require('feedparser'))({addmeta:true})
+      feedParser.on 'error', (err)-> return app.emit 'error',err
+      feedParser.on 'readable', ->
+        stream = this
+        # 記事ごとに、新着かどうか判定
+        if article = stream.read()
+          articles.push article
+        else return
 
-      if not _.contains(feed.links,article.link)
-        newArticles.push article
+        if not _.contains(feed.links,article.link)
+          newArticles.push article
 
-    feedParser.on 'end', ->
+      feedParser.on 'end', ->
 
-      # 新着記事が存在しない場合、終了
-      if articles.length is 0 or newArticles.length is 0
-        debug "Nothing New Articles:#{object.url}"
-        return callback()
-
-      # 新着記事が存在する場合,ページオブジェクト更新
-      debug "new Articles:#{newArticles.length} in #{object.url}"
-      async.forEach newArticles,(article,cb)->
-        Page.upsertOneWithFeed article,feed,(err,page)->
-          object.app.emit 'error',err if err
-          return cb()
-      ,(err)->
-        # ページリストをfeedに書き込み
-        feed.update links:_.pluck(articles,'link'),(err)->
-          return callback err if err
+        # 新着記事が存在しない場合、終了
+        if articles.length is 0 or newArticles.length is 0
+          debug "Nothing New Articles:#{object.url}"
           return callback()
+
+        # 新着記事が存在する場合,ページオブジェクト更新
+        debug "new Articles:#{newArticles.length} in #{object.url}"
+        async.forEach newArticles,(article,cb)->
+          Page.upsertOneWithFeed article,feed,(err,page)->
+            app.emit 'error',err if err
+
+            if page
+              # 更新通知
+              app.emit 'new page',page._id
+
+              # 後処理を行うタスク飛ばしておく
+              AnalyzeQueue.push page.link,(result)->
+                return debug result.error if result.error
+                page.update
+                  keywords:JSON.stringify result.keywords # Keyにイロイロ入るのでString
+                ,(err)->
+                  return debug err if err
+                  # 更新通知(Analyzed版)
+                  app.emit 'new page analyzed',page._id
+                  return debug "Analyzed.#{page.link}"
+
+            return cb()
+        ,(err)->
+          # ページリストをfeedに書き込み
+          feed.update links:_.pluck(articles,'link'),(err)->
+            return callback err if err
+            return callback()

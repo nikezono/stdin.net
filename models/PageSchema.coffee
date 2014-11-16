@@ -17,7 +17,6 @@ domain = require 'domain'
 random = require 'mongoose-random'
 path = require 'path'
 
-keyword = require path.resolve 'crawler/keyword'
 debug = require('debug')('stdin/models/page')
 
 PageSchema = new Mongo.Schema
@@ -53,38 +52,6 @@ PageSchema.statics.upsertOneWithFeed = (article,feed,callback)->
       feed:feed._id
     ,(err,doc)->
       return callback err,null if err
-
-      # Analyzeのタスク飛ばしておく
-      analyzeQueue.push doc.link,(result)->
-        return debug result.error if result.error
-        doc.update
-          keywords:JSON.stringify result.keywords # Keyにイロイロ入るのでString
-        ,(err)->
-          return debug err if err
-          return debug "Analyzed.#{doc.link}"
-
       return callback null,doc
 
 exports.Page = Mongo.model 'pages', PageSchema
-
-# Utility
-
-# 本文を取得し、特徴語を抽出するキュー
-exports.AnalyzeQueue = analyzeQueue = async.queue (link,callback)->
-
-  debug "AnalyzeQueue: #{link} Start."
-
-  # ここでのエラーはイベントだけ吐いて飲み込む
-  d = domain.create()
-  d.on 'error',(err)-> return callback error:err
-  d.run ->
-
-    request link,(err,res,body)->
-      return callback error:err if err
-      if res.statusCode isnt 200
-        debug "error analyzeQueue:#{link} #{res.statusCode}"
-        return callback error:new Error("Bad Status Code")
-      keywords = keyword body
-      return callback
-        keywords:keywords
-  ,process.env.ANALYZEQUEUE || 2

@@ -69,6 +69,8 @@ path = <span class="hljs-built_in">require</span> <span class="hljs-string">'pat
 Feed = (<span class="hljs-built_in">require</span> path.resolve <span class="hljs-string">'models'</span>,<span class="hljs-string">'FeedSchema'</span>).Feed
 Page = (<span class="hljs-built_in">require</span> path.resolve <span class="hljs-string">'models'</span>,<span class="hljs-string">'PageSchema'</span>).Page
 
+AnalyzeQueue = (<span class="hljs-built_in">require</span> path.resolve <span class="hljs-string">'crawler'</span>,<span class="hljs-string">'postProcessing'</span>).AnalyzeQueue
+
 exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">FeedCrawler</span></span>
   app = <span class="hljs-literal">null</span>
 
@@ -192,8 +194,8 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-title">parser</span> = <span class="hljs-params">(object,callback)</span>-&gt;</span>
-  debug <span class="hljs-string">"parseAndUpdate <span class="hljs-subst">#{object.url}</span>"</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-function">  <span class="hljs-title">parser</span> = <span class="hljs-params">(object,callback)</span>-&gt;</span>
+    debug <span class="hljs-string">"parseAndUpdate <span class="hljs-subst">#{object.url}</span>"</span></pre></div></div>
             
         </li>
         
@@ -208,8 +210,8 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>  Feed.findOne <span class="hljs-attribute">url</span>:object.url,<span class="hljs-function"><span class="hljs-params">(err,feed)</span>-&gt;</span>
-    <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err</pre></div></div>
+            <div class="content"><div class='highlight'><pre>    Feed.findOne <span class="hljs-attribute">url</span>:object.url,<span class="hljs-function"><span class="hljs-params">(err,feed)</span>-&gt;</span>
+      <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err</pre></div></div>
             
         </li>
         
@@ -224,19 +226,19 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    req = request object.url
-    req.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> callback err
-    req.<span class="hljs-literal">on</span> <span class="hljs-string">'response'</span>,<span class="hljs-function"><span class="hljs-params">(res)</span>-&gt;</span>
-      <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.emit <span class="hljs-string">'error'</span>, <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Bad status code'</span>) <span class="hljs-keyword">if</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
-      stream = <span class="hljs-keyword">this</span>
-      stream.pipe feedParser
+            <div class="content"><div class='highlight'><pre>      req = request object.url
+      req.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> callback err
+      req.<span class="hljs-literal">on</span> <span class="hljs-string">'response'</span>,<span class="hljs-function"><span class="hljs-params">(res)</span>-&gt;</span>
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.emit <span class="hljs-string">'error'</span>, <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'Bad status code'</span>) <span class="hljs-keyword">if</span> res.statusCode <span class="hljs-keyword">isnt</span> <span class="hljs-number">200</span>
+        stream = <span class="hljs-keyword">this</span>
+        stream.pipe feedParser
 
-    articles = []
-    newArticles = []
-    feedParser = <span class="hljs-keyword">new</span> (<span class="hljs-built_in">require</span>(<span class="hljs-string">'feedparser'</span>))({<span class="hljs-attribute">addmeta</span>:<span class="hljs-literal">true</span>})
-    feedParser.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> object.app.emit <span class="hljs-string">'error'</span>,err
-    feedParser.<span class="hljs-literal">on</span> <span class="hljs-string">'readable'</span>, <span class="hljs-function">-&gt;</span>
-      stream = <span class="hljs-keyword">this</span></pre></div></div>
+      articles = []
+      newArticles = []
+      feedParser = <span class="hljs-keyword">new</span> (<span class="hljs-built_in">require</span>(<span class="hljs-string">'feedparser'</span>))({<span class="hljs-attribute">addmeta</span>:<span class="hljs-literal">true</span>})
+      feedParser.<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span> <span class="hljs-keyword">return</span> app.emit <span class="hljs-string">'error'</span>,err
+      feedParser.<span class="hljs-literal">on</span> <span class="hljs-string">'readable'</span>, <span class="hljs-function">-&gt;</span>
+        stream = <span class="hljs-keyword">this</span></pre></div></div>
             
         </li>
         
@@ -251,14 +253,14 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> article = stream.read()
-        articles.push article
-      <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span>
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> article = stream.read()
+          articles.push article
+        <span class="hljs-keyword">else</span> <span class="hljs-keyword">return</span>
 
-      <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> _.contains(feed.links,article.link)
-        newArticles.push article
+        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> _.contains(feed.links,article.link)
+          newArticles.push article
 
-    feedParser.<span class="hljs-literal">on</span> <span class="hljs-string">'end'</span>, <span class="hljs-function">-&gt;</span></pre></div></div>
+      feedParser.<span class="hljs-literal">on</span> <span class="hljs-string">'end'</span>, <span class="hljs-function">-&gt;</span></pre></div></div>
             
         </li>
         
@@ -273,9 +275,9 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> articles.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> newArticles.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
-        debug <span class="hljs-string">"Nothing New Articles:<span class="hljs-subst">#{object.url}</span>"</span>
-        <span class="hljs-keyword">return</span> callback()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>        <span class="hljs-keyword">if</span> articles.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span> <span class="hljs-keyword">or</span> newArticles.length <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+          debug <span class="hljs-string">"Nothing New Articles:<span class="hljs-subst">#{object.url}</span>"</span>
+          <span class="hljs-keyword">return</span> callback()</pre></div></div>
             
         </li>
         
@@ -290,12 +292,12 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>      debug <span class="hljs-string">"new Articles:<span class="hljs-subst">#{newArticles.length}</span> in <span class="hljs-subst">#{object.url}</span>"</span>
-      async.forEach newArticles,<span class="hljs-function"><span class="hljs-params">(article,cb)</span>-&gt;</span>
-        Page.upsertOneWithFeed article,feed,<span class="hljs-function"><span class="hljs-params">(err,page)</span>-&gt;</span>
-          object.app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
-          <span class="hljs-keyword">return</span> cb()
-      ,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span></pre></div></div>
+            <div class="content"><div class='highlight'><pre>        debug <span class="hljs-string">"new Articles:<span class="hljs-subst">#{newArticles.length}</span> in <span class="hljs-subst">#{object.url}</span>"</span>
+        async.forEach newArticles,<span class="hljs-function"><span class="hljs-params">(article,cb)</span>-&gt;</span>
+          Page.upsertOneWithFeed article,feed,<span class="hljs-function"><span class="hljs-params">(err,page)</span>-&gt;</span>
+            app.emit <span class="hljs-string">'error'</span>,err <span class="hljs-keyword">if</span> err
+
+            <span class="hljs-keyword">if</span> page</pre></div></div>
             
         </li>
         
@@ -306,13 +308,67 @@ exports = <span class="hljs-built_in">module</span>.exports = <span class="hljs-
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
+              <p>更新通知</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              app.emit <span class="hljs-string">'new page'</span>,page._id</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p>後処理を行うタスク飛ばしておく</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>              AnalyzeQueue.push page.link,<span class="hljs-function"><span class="hljs-params">(result)</span>-&gt;</span>
+                <span class="hljs-keyword">return</span> debug result.error <span class="hljs-keyword">if</span> result.error
+                page.update
+                  <span class="hljs-attribute">keywords</span>:JSON.stringify result.keywords <span class="hljs-comment"># Keyにイロイロ入るのでString</span>
+                ,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+                  <span class="hljs-keyword">return</span> debug err <span class="hljs-keyword">if</span> err</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p>更新通知(Analyzed版)</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>                  app.emit <span class="hljs-string">'new page analyzed'</span>,page._id
+                  <span class="hljs-keyword">return</span> debug <span class="hljs-string">"Analyzed.<span class="hljs-subst">#{page.link}</span>"</span>
+
+            <span class="hljs-keyword">return</span> cb()
+        ,<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
               <p>ページリストをfeedに書き込み</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>        feed.update <span class="hljs-attribute">links</span>:_.pluck(articles,<span class="hljs-string">'link'</span>),<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
-          <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err
-          <span class="hljs-keyword">return</span> callback()</pre></div></div>
+            <div class="content"><div class='highlight'><pre>          feed.update <span class="hljs-attribute">links</span>:_.pluck(articles,<span class="hljs-string">'link'</span>),<span class="hljs-function"><span class="hljs-params">(err)</span>-&gt;</span>
+            <span class="hljs-keyword">return</span> callback err <span class="hljs-keyword">if</span> err
+            <span class="hljs-keyword">return</span> callback()</pre></div></div>
             
         </li>
         
