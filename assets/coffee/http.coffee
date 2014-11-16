@@ -11,7 +11,7 @@ window.httpApiWrapper =
 
   # 最新記事取得
   getLatestArticles:(callback)->
-    $.getJSON "/api/page/latest?limit=150"
+    $.getJSON "/api/page/latest?limit=20"
     .success (data)->
       callback null,data
     .error (err)->
@@ -24,4 +24,3 @@ window.httpApiWrapper =
       callback null,data
     .error (err)->
       callback err,null
-
