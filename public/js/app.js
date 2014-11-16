@@ -32,7 +32,7 @@
     };
     refreshRandom = function(callback) {
       return httpApi.getPageList({
-        limit: 50,
+        limit: 20,
         random: true,
         sortByPubDate: false
       }, function(err, data) {
@@ -47,13 +47,12 @@
       });
     };
     refreshModel = function(data, callback) {
-      var article, newArticles, _i, _len;
-      newArticles = [];
+      var article, _i, _len;
+      articles.reset([]);
       for (_i = 0, _len = data.length; _i < _len; _i++) {
         article = data[_i];
-        newArticles.push(new Article(article));
+        articles.push(new Article(article));
       }
-      articles.reset(newArticles);
       notify.success("Refreshed");
       if (callback) {
         return callback();

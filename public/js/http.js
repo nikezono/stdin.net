@@ -10,7 +10,7 @@
       });
     },
     getLatestArticles: function(callback) {
-      return $.getJSON("/api/page/latest?limit=150").success(function(data) {
+      return $.getJSON("/api/page/latest?limit=20").success(function(data) {
         return callback(null, data);
       }).error(function(err) {
         return callback(err, null);

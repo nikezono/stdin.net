@@ -43,10 +43,11 @@
             
             <div class="content"><div class='highlight'><pre>
 debug = <span class="hljs-built_in">require</span>(<span class="hljs-string">'debug'</span>)(<span class="hljs-string">'stdin/events/home'</span>)
+path = <span class="hljs-built_in">require</span> <span class="hljs-string">'path'</span>
 <span class="hljs-built_in">module</span>.exports.HomeEvent = <span class="hljs-function"><span class="hljs-params">(app)</span> -&gt;</span>
 
   Feed = app.get(<span class="hljs-string">'models'</span>).Feed
-  AnalyzeQueue = app.get(<span class="hljs-string">'models'</span>).AnalyzeQueue
+  AnalyzeQueue = <span class="hljs-built_in">require</span>(path.resolve(<span class="hljs-string">'crawler'</span>,<span class="hljs-string">'postProcessing'</span>)).AnalyzeQueue
 
   <span class="hljs-attribute">index</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
     hatenaCrawlerQueue = app.get <span class="hljs-string">'hatenaCrawlerQueue'</span>

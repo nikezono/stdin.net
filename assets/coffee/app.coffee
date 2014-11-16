@@ -31,7 +31,7 @@ $ ->
 
   refreshRandom = (callback)->
     httpApi.getPageList
-      limit:50
+      limit:20
       random:true
       sortByPubDate:false
     ,(err,data)->
@@ -42,10 +42,9 @@ $ ->
       refreshModel data,callback
 
   refreshModel = (data,callback)->
-    newArticles = []
+    articles.reset []
     for article in data
-      newArticles.push new Article(article)
-    articles.reset newArticles
+      articles.push new Article(article)
     notify.success "Refreshed"
     return callback() if callback
 
