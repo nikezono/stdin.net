@@ -16,19 +16,22 @@ module.exports.PageEvent = (app) ->
 
   ###
 
-  @api {GET}  /api/page/:id ページの取得
-  @apiVersion 0.1.0
+  @api {GET}  /api/page/find ページの取得
+  @apiVersion 0.2.0
   @apiName 記事オブジェクト取得
   @apiDescription 特定のページを取得します。
 
     指定されたページのオブジェクトを一件だけ取得するAPIです。
 
+    `id`か`link`のどちらかのパラメータは必須です。両方指定した場合、ID優先となります。
+
     ランダムなページや、最新のページを1件だけ取得する場合は、
     `/api/page/list` APIを、`limit=1` などの指定で使用してください。
 
-    Sample: http://www.stdin.net/api/page/54518505e0b813906fbffeaf
+    Sample: http://www.stdin.net/api/page/find?id=54518505e0b813906fbffeaf
 
-  @apiParam {Id} id 取得するページのObject Id
+  @apiParam {String} id 取得するページのObject Id
+  @apiParam {String} link 取得するページのPermalink
   @apiParam {Boolean} populateFeed 配信元フィードの情報を含める(default=true)
 
   @apiSuccess {JSONObject} json 成功時コールバック
@@ -51,26 +54,31 @@ module.exports.PageEvent = (app) ->
 
   ###
 
-  getPageWithId: (req,res,next)->
+  getPageOne: (req,res,next)->
 
-    return res.send 400 if not req.params.id or req.params.id is null
-
+    return res.send 400 if _.isEmpty(req.query.id) and _.isEmpty(req.query.link)
     # Options
     # 実行順
     options = req.query
     options.populateFeed =  if options.populateFeed is 'false' then false else  true # Feedの情報を取得する
 
     promise = Page
-    promise = promise.findOne(_id:new ObjectId(req.params.id))
-    promise = promise.populate('feed') if options.populateFeed
+    if options.id
+      promise = promise.findOne(_id:new ObjectId(options.id))
+    else
+      promise = promise.findOne(link:options.link)
+    promise = promise.select '-r -__v'
+    promise = promise.populate('feed','-pages -links') if options.populateFeed
+    isFounded = false
     promise = promise.stream()
     .on 'error', (err) ->
       app.emit 'error',err
       return res.send 500
     .on 'data', (doc)->
+      isFounded = true
       return res.json doc
     .on 'close',->
-      return res.send 404
+      return res.status(404).end() if not isFounded
 
   ###
 

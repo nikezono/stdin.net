@@ -1,20 +1,27 @@
 define({ api: [
   {
     "type": "GET",
-    "url": " /api/page/:id",
+    "url": " /api/page/find",
     "title": "ページの取得",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "name": "記事オブジェクト取得",
-    "description": "<p>特定のページを取得します。</p><p>   指定されたページのオブジェクトを一件だけ取得するAPIです。</p><p>   ランダムなページや、最新のページを1件だけ取得する場合は、   <code>/api/page/list</code> APIを、<code>limit=1</code> などの指定で使用してください。</p><p>   Sample: <a href=\"http://www.stdin.net/api/page/54518505e0b813906fbffeaf\">http://www.stdin.net/api/page/54518505e0b813906fbffeaf</a></p>",
+    "description": "<p>特定のページを取得します。</p><p>   指定されたページのオブジェクトを一件だけ取得するAPIです。</p><p>   <code>id</code>か<code>link</code>のどちらかのパラメータは必須です。両方指定した場合、ID優先となります。</p><p>   ランダムなページや、最新のページを1件だけ取得する場合は、   <code>/api/page/list</code> APIを、<code>limit=1</code> などの指定で使用してください。</p><p>   Sample: <a href=\"http://www.stdin.net/api/page/find?id=54518505e0b813906fbffeaf\">http://www.stdin.net/api/page/find?id=54518505e0b813906fbffeaf</a></p>",
     "parameter": {
       "fields": {
         "Parameter": [
           {
             "group": "Parameter",
-            "type": "Id",
+            "type": "String",
             "field": "id",
             "optional": false,
             "description": "<p>取得するページのObject Id</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "field": "link",
+            "optional": false,
+            "description": "<p>取得するページのPermalink</p>"
           },
           {
             "group": "Parameter",

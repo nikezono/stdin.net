@@ -66,19 +66,22 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
             </div>
             
             <div class="content"><div class='highlight'><pre>
-  <span class="hljs-property">@api</span> {GET}  <span class="hljs-regexp">/api/page/</span>:id ページの取得
-  <span class="hljs-property">@apiVersion</span> <span class="hljs-number">0.1</span><span class="hljs-number">.0</span>
+  <span class="hljs-property">@api</span> {GET}  /api/page/find ページの取得
+  <span class="hljs-property">@apiVersion</span> <span class="hljs-number">0.2</span><span class="hljs-number">.0</span>
   <span class="hljs-property">@apiName</span> 記事オブジェクト取得
   <span class="hljs-property">@apiDescription</span> 特定のページを取得します。
 
     指定されたページのオブジェクトを一件だけ取得するAPIです。
 
+    `<span class="javascript">id</span>`か`<span class="javascript">link</span>`のどちらかのパラメータは必須です。両方指定した場合、ID優先となります。
+
     ランダムなページや、最新のページを<span class="hljs-number">1</span>件だけ取得する場合は、
     `<span class="javascript">/api/page/list</span>` APIを、`<span class="javascript">limit=<span class="hljs-number">1</span></span>` などの指定で使用してください。
 
-    <span class="hljs-attribute">Sample</span>: <span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>www.stdin.net/api/page/<span class="hljs-number">54518505e0</span>b813906fbffeaf
+    <span class="hljs-attribute">Sample</span>: <span class="hljs-attribute">http</span>:<span class="hljs-regexp">//</span>www.stdin.net/api/page/find?id=<span class="hljs-number">54518505e0</span>b813906fbffeaf
 
-  <span class="hljs-property">@apiParam</span> {Id} id 取得するページのObject Id
+  <span class="hljs-property">@apiParam</span> {String} id 取得するページのObject Id
+  <span class="hljs-property">@apiParam</span> {String} link 取得するページのPermalink
   <span class="hljs-property">@apiParam</span> {Boolean} populateFeed 配信元フィードの情報を含める(<span class="hljs-reserved">default</span>=<span class="hljs-literal">true</span>)
 
   <span class="hljs-property">@apiSuccess</span> {JSONObject} json 成功時コールバック
@@ -113,9 +116,9 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
             </div>
             
             <div class="content"><div class='highlight'><pre>
-  <span class="hljs-attribute">getPageWithId</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
+  <span class="hljs-attribute">getPageOne</span>: <span class="hljs-function"><span class="hljs-params">(req,res,next)</span>-&gt;</span>
 
-    <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> req.params.id <span class="hljs-keyword">or</span> req.params.id <span class="hljs-keyword">is</span> <span class="hljs-literal">null</span></pre></div></div>
+    <span class="hljs-keyword">return</span> res.send <span class="hljs-number">400</span> <span class="hljs-keyword">if</span> _.isEmpty(req.query.id) <span class="hljs-keyword">and</span> _.isEmpty(req.query.link)</pre></div></div>
             
         </li>
         
@@ -135,16 +138,22 @@ async = <span class="hljs-built_in">require</span> <span class="hljs-string">'as
     options.populateFeed =  <span class="hljs-keyword">if</span> options.populateFeed <span class="hljs-keyword">is</span> <span class="hljs-string">'false'</span> <span class="hljs-keyword">then</span> <span class="hljs-literal">false</span> <span class="hljs-keyword">else</span>  <span class="hljs-literal">true</span> <span class="hljs-comment"># Feedの情報を取得する</span>
 
     promise = Page
-    promise = promise.findOne(<span class="hljs-attribute">_id</span>:<span class="hljs-keyword">new</span> ObjectId(req.params.id))
-    promise = promise.populate(<span class="hljs-string">'feed'</span>) <span class="hljs-keyword">if</span> options.populateFeed
+    <span class="hljs-keyword">if</span> options.id
+      promise = promise.findOne(<span class="hljs-attribute">_id</span>:<span class="hljs-keyword">new</span> ObjectId(options.id))
+    <span class="hljs-keyword">else</span>
+      promise = promise.findOne(<span class="hljs-attribute">link</span>:options.link)
+    promise = promise.select <span class="hljs-string">'-r -__v'</span>
+    promise = promise.populate(<span class="hljs-string">'feed'</span>,<span class="hljs-string">'-pages -links'</span>) <span class="hljs-keyword">if</span> options.populateFeed
+    isFounded = <span class="hljs-literal">false</span>
     promise = promise.stream()
     .<span class="hljs-literal">on</span> <span class="hljs-string">'error'</span>, <span class="hljs-function"><span class="hljs-params">(err)</span> -&gt;</span>
       app.emit <span class="hljs-string">'error'</span>,err
       <span class="hljs-keyword">return</span> res.send <span class="hljs-number">500</span>
     .<span class="hljs-literal">on</span> <span class="hljs-string">'data'</span>, <span class="hljs-function"><span class="hljs-params">(doc)</span>-&gt;</span>
+      isFounded = <span class="hljs-literal">true</span>
       <span class="hljs-keyword">return</span> res.json doc
     .<span class="hljs-literal">on</span> <span class="hljs-string">'close'</span>,<span class="hljs-function">-&gt;</span>
-      <span class="hljs-keyword">return</span> res.send <span class="hljs-number">404</span></pre></div></div>
+      <span class="hljs-keyword">return</span> res.status(<span class="hljs-number">404</span>).end() <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> isFounded</pre></div></div>
             
         </li>
         
