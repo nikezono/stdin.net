@@ -39,5 +39,6 @@ module.exports = (input)->
   ## 二回以上言われていない言葉は切る
   for key,value of hash
     delete hash[key] if value < 2
+    delete hash[key] if key.length < 3
 
   return hash
