@@ -51,7 +51,7 @@ exports = module.exports = class FeedCrawler
 
       # 取得/追加
       @parseAndUpdate.push {app:app,url:object.url},(err)=>
-        return app.emit 'error',err if err
+        app.emit 'error',err if err
 
         # 取得/計算終了時、タイマー起動
         @timer.post {url:object.url},@interval,(err,evId)->
