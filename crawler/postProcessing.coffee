@@ -13,6 +13,7 @@ async   = require 'async'
 request = require 'request'
 path    = require 'path'
 keyword = require path.resolve('crawler','keyword')
+isbn    = require path.resolve('crawler','isbn')
 
 # 本文を取得し、特徴語を抽出するキュー
 exports.AnalyzeQueue = async.queue (link,callback)->
@@ -30,6 +31,9 @@ exports.AnalyzeQueue = async.queue (link,callback)->
         debug "error analyzeQueue:#{link} #{res.statusCode}"
         return callback error:new Error("Bad Status Code")
       keywords = keyword body
+      isbns = isbn body
+
       return callback
         keywords:keywords
+        isbn:isbns
   ,process.env.ANALYZEQUEUE || 2

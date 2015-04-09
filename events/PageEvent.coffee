@@ -157,7 +157,7 @@ module.exports.PageEvent = (app) ->
   @todo RFC勧告をチェックして、従う
   @note HTML5 Server Sent Events使う?
   @api {GET}  /api/page/stream ページストリーム
-  @apiVersion 0.1.0
+  @apiVersion 0.3.0
   @apiName 記事リスト取得
   @apiDescription ページ更新のストリームを取得します。
 

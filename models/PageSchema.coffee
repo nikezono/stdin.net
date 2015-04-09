@@ -25,6 +25,7 @@ PageSchema = new Mongo.Schema
   feed:        { type: Mongo.Schema.Types.ObjectId, ref: 'feeds' }
   article:     { type: Mongo.Schema.Types.Mixed }
   keywords:    { type: String }
+  isbn:        [{ type: String }]
 
 # Plugins
 PageSchema.plugin(random, { path: 'r' })

@@ -135,6 +135,7 @@ exports = module.exports = class FeedCrawler
                 return debug result.error if result.error
                 page.update
                   keywords:JSON.stringify result.keywords # Keyにイロイロ入るのでString
+                  isbn: result.isbn
                 ,(err)->
                   return debug err if err
                   # 更新通知(Analyzed版)
