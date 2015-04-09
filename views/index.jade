@@ -22,7 +22,7 @@ block content
                     a(href="/public/apidocs/index.html")
                       | API Document
                   li
-                    p=memoryUsage
+                    p =memoryUsage
                   li
                     p search:
                       = search
@@ -35,16 +35,6 @@ block content
                   li
                     p analyze:
                       = analyze
-
-      #Navigation.col-md-12
-        .input-group
-          input#FindQuery.form-control(type="text",
-            placehoder="Search URL or Input Feed URL"
-          )
-          span.input-group-btn
-            button.btn.btn-primary#Find
-              span.glyphicon.glyphicon-search
-              |  Find
 
       #Pages.col-md-12(style="padding-top:15px")
         .text-center

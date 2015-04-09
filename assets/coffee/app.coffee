@@ -90,12 +90,3 @@ $ ->
       animateFlag = false
 
 
-  # Find Button
-  $('button#Find').click ->
-    query = $('#FindQuery').val()
-    httpApi.findFeed query,(err,data)->
-      return notify.danger err if err
-      for title in data.added
-        notify.success "Added: #{title}"
-      for title in data.alreadyAdded
-        notify.info "Already Added:#{title}"
