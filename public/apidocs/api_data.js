@@ -48,7 +48,7 @@ define({ api: [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "  {\n    _id: \"ObjectId(\"54512b79e959d9d2bdc6f50b\")\" // MongoDBのObjectId(Unique)\n    link: \"http://www.ping.pong/article/1.html\" // 記事へのPermalink\n    article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }\n    feed:{\n      url: \"http://www.ping.pong/feed.xml\" // RSS/AtomフィードのURL\n      feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }\n    // 以下,記事生成後にジョブキューにより生成\n    keywords: {\"ping\":10,\"pong\":2,\"bang\":5} // 本文中の頻出語\n  }\n",
+          "content": "  {\n    _id: \"ObjectId(\"54512b79e959d9d2bdc6f50b\")\" // MongoDBのObjectId(Unique)\n    link: \"http://www.ping.pong/article/1.html\" // 記事へのPermalink\n    article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }\n    feed:{\n      url: \"http://www.ping.pong/feed.xml\" // RSS/AtomフィードのURL\n      feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }\n    // 以下,記事生成後にジョブキューにより生成\n    keywords: {\"ping\":10,\"pong\":2,\"bang\":5} // 本文中の頻出語\n    isbn: [ \"4150113483\" ]\n  }\n",
           "type": "json"
         }
       ]
@@ -130,7 +130,7 @@ define({ api: [
       "examples": [
         {
           "title": "Success-Response:",
-          "content": "  [\n    {\n      _id: \"ObjectId(\"54512b79e959d9d2bdc6f50b\")\" // MongoDBのObjectId(Unique)\n      link: \"http://www.ping.pong/article/1.html\" // 記事へのPermalink\n      article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }\n      feed:{\n        url: \"http://www.ping.pong/feed.xml\" // RSS/AtomフィードのURL\n        feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }\n      // 以下,記事生成後にジョブキューにより生成\n      keywords: {\"ping\":10,\"pong\":2,\"bang\":5} // 本文中の頻出語\n    }\n  ,...]\n",
+          "content": "  [\n    {\n      _id: \"ObjectId(\"54512b79e959d9d2bdc6f50b\")\" // MongoDBのObjectId(Unique)\n      link: \"http://www.ping.pong/article/1.html\" // 記事へのPermalink\n      article: { https://github.com/danmactough/node-feedparser#list-of-article-properties }\n      feed:{\n        url: \"http://www.ping.pong/feed.xml\" // RSS/AtomフィードのURL\n        feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }\n      // 以下,記事生成後にジョブキューにより生成\n      keywords: {\"ping\":10,\"pong\":2,\"bang\":5} // 本文中の頻出語\n      isbn: [ \"4150113483\" ]\n    }\n  ,...]\n",
           "type": "json"
         }
       ]

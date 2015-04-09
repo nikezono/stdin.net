@@ -46,6 +46,7 @@ module.exports.PageEvent = (app) ->
         feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
       // 以下,記事生成後にジョブキューにより生成
       keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
+      isbn: [ "4150113483" ]
     }
 
   @apiError PageNotFound(404) 当該ページが存在しないとき
@@ -110,6 +111,7 @@ module.exports.PageEvent = (app) ->
           feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
         // 以下,記事生成後にジョブキューにより生成
         keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
+        isbn: [ "4150113483" ]
       }
     ,...]
 
@@ -187,6 +189,7 @@ module.exports.PageEvent = (app) ->
           feed: { https://github.com/danmactough/node-feedparser#list-of-meta-properties }
         // 以下,記事生成後にジョブキューにより生成
         keywords: {"ping":10,"pong":2,"bang":5} // 本文中の頻出語
+        isbn: [ "4150113483" ]
       }
     ,...
 
